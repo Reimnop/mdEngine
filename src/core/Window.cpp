@@ -16,7 +16,7 @@ namespace mdEngine
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    this->window = glfwCreateWindow(INIT_WIDTH, INIT_HEIGHT, "mdEngine | CC01 project | team 2", nullptr, nullptr);
+    this->window = glfwCreateWindow(INIT_WIDTH, INIT_HEIGHT, "mdEngine | CC01 | team 2", nullptr, nullptr);
     if (!this->window)
     {
       glfwTerminate();

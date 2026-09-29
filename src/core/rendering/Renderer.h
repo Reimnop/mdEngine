@@ -36,8 +36,13 @@ namespace mdEngine
     GLuint program = 0;
     GLint uMvpLocation = 0;
 
-    static void setVertexAttributesForVertex();
+    GLuint fbo;
+    GLuint colorRbo, depthRbo;
+    int fboWidth = 1280, fboHeight = 720;
 
     void handleMeshUpdates();
+    void handleFboResize(int width, int height);
+
+    static void setVertexAttributesForVertex();
   };
 } // mdEngine

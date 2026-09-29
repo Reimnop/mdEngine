@@ -22,6 +22,20 @@ namespace mdEngine
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, eboSize * static_cast<GLsizei>(sizeof(uint32_t)), nullptr, GL_DYNAMIC_DRAW);
 
+    // setup fbo
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    glGenRenderbuffers(1, &colorRbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, colorRbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, fboWidth, fboHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRbo);
+
+    glGenRenderbuffers(1, &depthRbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
+
     // init shader
     const auto vss = io::readFile("assets/shaders/obj.vsh");
     const auto fss = io::readFile("assets/shaders/obj.fsh");
@@ -50,23 +64,29 @@ namespace mdEngine
   Renderer::~Renderer()
   {
     glDeleteVertexArrays(1, &this->vao);
+    glDeleteFramebuffers(1, &fbo);
+    glDeleteRenderbuffers(1, &colorRbo);
+    glDeleteRenderbuffers(1, &depthRbo);
     glDeleteProgram(this->program);
   }
 
   void Renderer::renderFrame(const DrawObj* drawObjs, const size_t drawObjCount, const CameraObj& cameraObj)
   {
-    handleMeshUpdates();
-
     int width, height;
     windowPtr->getSize(width, height);
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
     auto proj = Mat4::perspective(cameraObj.fov, aspect, 0.1f, 1000.0f);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    handleMeshUpdates();
+    handleFboResize(width, height);
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, width, height);
+
+    glEnable(GL_DEPTH_TEST);
 
     glUseProgram(this->program);
     glBindVertexArray(this->vao);
@@ -85,6 +105,13 @@ namespace mdEngine
         reinterpret_cast<const void*>(mesh.baseIndex * sizeof(uint32_t)),
         mesh.baseVertex);
     }
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer(
+      0, 0, width, height,
+      0, 0, width, height,
+      GL_COLOR_BUFFER_BIT, GL_NEAREST);
   }
 
   void Renderer::handleMeshUpdates()
@@ -132,6 +159,31 @@ namespace mdEngine
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
       glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, static_cast<GLsizei>(indices.size() * sizeof(uint32_t)), indices.data());
     }
+  }
+
+  void Renderer::handleFboResize(int width, int height)
+  {
+    if (width == this->fboWidth && height == this->fboHeight)
+      return;
+
+    this->fboWidth = width;
+    this->fboHeight = height;
+
+    // delete, create new
+    glDeleteRenderbuffers(1, &colorRbo);
+    glDeleteRenderbuffers(1, &depthRbo);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    glGenRenderbuffers(1, &colorRbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, colorRbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, fboWidth, fboHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRbo);
+
+    glGenRenderbuffers(1, &depthRbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
   }
 
   MeshHandle Renderer::addMesh(Vertex* vertices, const GLsizei vertexCount, uint32_t* indices, const GLsizei indexCount)
