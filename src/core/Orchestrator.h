@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+
+#include "Scene.h"
 #include "rendering/Renderer.h"
 
 namespace mdEngine
@@ -15,6 +18,9 @@ namespace mdEngine
     Window window;
     Renderer renderer;
 
-    MeshHandle bullshit;
+    std::vector<DrawObj> drawObjs{};
+    CameraObj cameraObj{};
+
+    std::unique_ptr<Scene> currentScene;
   };
 } // mdEngine
