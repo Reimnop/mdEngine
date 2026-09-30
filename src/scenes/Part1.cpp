@@ -1,5 +1,7 @@
 #include "Part1.h"
 
+#include <cmath>
+
 #include "core/data/Vertex.h"
 
 struct MeshData { std::vector<mdEngine::Vertex> v; std::vector<uint32_t> i; };
@@ -34,7 +36,8 @@ mdEngine::MeshHandle createSphereMesh(mdEngine::Renderer& renderer)
     static_cast<GLsizei>(meshData.i.size()));
 }
 
-Part1::Part1(mdEngine::Renderer* rendererPtr): rendererPtr(rendererPtr), mesh(createSphereMesh(*rendererPtr))
+Part1::Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr)
+  : rendererPtr(rendererPtr), camera(windowPtr), mesh(createSphereMesh(*rendererPtr))
 {
 }
 
@@ -45,10 +48,11 @@ Part1::~Part1()
 
 void Part1::update()
 {
+  camera.update();
 }
 
 void Part1::render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj)
 {
-  cameraObj.view = mdEngine::Mat4::translate(0.0f, 0.0f, -5.0f);
+  cameraObj.view = camera.getViewMatrix();
   drawObjs.push_back({ .meshHandle = mesh });
 }

@@ -11,8 +11,16 @@ namespace mdEngine
     Window();
     ~Window();
 
+    // prevent copying
+    Window(const Window&) = delete;
+    Window& operator=(const Window&) = delete;
+
     [[nodiscard]] bool getWindowShouldClose() const;
     void getSize(int& width, int& height) const;
+
+    [[nodiscard]] bool isMouseButtonDown(int button) const;
+    void getCursorPos(double& x, double& y) const;
+    [[nodiscard]] double consumeScrollDelta();
 
     void pollEvents() const;
     void swapBuffers() const;
@@ -21,5 +29,6 @@ namespace mdEngine
     static constexpr auto INIT_HEIGHT = 720;
 
     GLFWwindow* window;
+    double scrollDelta = 0.0;
   };
 } // mdEngine

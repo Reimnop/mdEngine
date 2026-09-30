@@ -4,7 +4,7 @@
 
 namespace mdEngine
 {
-  Orchestrator::Orchestrator(): window(Window()), renderer(&window), currentScene(std::make_unique<Part1>(&renderer))
+  Orchestrator::Orchestrator(): window(Window()), renderer(&window), currentScene(std::make_unique<Part1>(&renderer, &window))
   {
   }
 

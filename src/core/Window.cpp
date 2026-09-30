@@ -25,6 +25,12 @@ namespace mdEngine
 
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);
+
+    glfwSetWindowUserPointer(window, this);
+    glfwSetScrollCallback(window, [](GLFWwindow* w, double, double yoffset)
+    {
+      static_cast<Window*>(glfwGetWindowUserPointer(w))->scrollDelta += yoffset;
+    });
   }
 
   Window::~Window()
@@ -41,6 +47,23 @@ namespace mdEngine
   void Window::getSize(int& width, int& height) const
   {
     glfwGetWindowSize(this->window, &width, &height);
+  }
+
+  bool Window::isMouseButtonDown(const int button) const
+  {
+    return glfwGetMouseButton(this->window, button) == GLFW_PRESS;
+  }
+
+  void Window::getCursorPos(double& x, double& y) const
+  {
+    glfwGetCursorPos(this->window, &x, &y);
+  }
+
+  double Window::consumeScrollDelta()
+  {
+    const double d = this->scrollDelta;
+    this->scrollDelta = 0.0;
+    return d;
   }
 
   void Window::pollEvents() const
