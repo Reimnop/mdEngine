@@ -72,6 +72,8 @@ namespace mdEngine
   Renderer::~Renderer()
   {
     glDeleteVertexArrays(1, &this->vao);
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
     glDeleteFramebuffers(1, &fbo);
     glDeleteTextures(1, &colorTex);
     glDeleteRenderbuffers(1, &depthRbo);
@@ -101,10 +103,7 @@ namespace mdEngine
     glUniform1f(this->uAmbientLocation, lightingObj.ambient);
     glUniform1i(this->uShadingModeLocation, static_cast<GLint>(lightingObj.shadingMode));
 
-    if (lightingObj.fillMode == FillMode::Wireframe)
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    else
-      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPolygonMode(GL_FRONT_AND_BACK, lightingObj.fillMode == FillMode::Wireframe ? GL_LINE : GL_FILL);
 
     for (size_t i = 0; i < drawObjCount; i++)
     {
@@ -117,10 +116,10 @@ namespace mdEngine
       glUniform3f(this->uColorLocation, drawObj.color.x, drawObj.color.y, drawObj.color.z);
       glDrawElementsBaseVertex(
         GL_TRIANGLES,
-        mesh.indexCount,
+        mesh.indexAllocation.size,
         GL_UNSIGNED_INT,
-        reinterpret_cast<const void*>(mesh.baseIndex * sizeof(uint32_t)),
-        mesh.baseVertex);
+        reinterpret_cast<const void*>(mesh.indexAllocation.offset * sizeof(uint32_t)),
+        mesh.vertexAllocation.offset);
     }
 
     return this->colorTex;
@@ -200,27 +199,38 @@ namespace mdEngine
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
   }
 
-  MeshHandle Renderer::addMesh(Vertex* vertices, const GLsizei vertexCount, uint32_t* indices, const GLsizei indexCount)
+  MeshHandle Renderer::createMesh(Vertex* vertices, const GLsizei vertexCount, uint32_t* indices, const GLsizei indexCount)
   {
     this->meshesDirty = true;
 
-    // add vertices to vertex buffer
-    this->vertices.insert(this->vertices.end(), vertices, vertices + vertexCount);
+    // allocate space on the vertex buffer
+    const auto vertexAllocation = vertexBufferAllocator.allocate(vertexCount, [&](const size_t newCapacity)
+    {
+      this->vertices.resize(newCapacity);
+    });
 
-    // add indices to index buffer
-    this->indices.insert(this->indices.end(), indices, indices + indexCount);
+    // copy vertices into the allocated space
+    std::copy(vertices, vertices + vertexCount, this->vertices.begin() + vertexAllocation.offset);
+
+    // allocate space on the index buffer
+    const auto indexAllocation = indexBufferAllocator.allocate(indexCount, [&](const size_t newCapacity)
+    {
+      this->indices.resize(newCapacity);
+    });
+
+    // copy indices into the allocated space
+    std::copy(indices, indices + indexCount, this->indices.begin() + indexAllocation.offset);
 
     return MeshHandle{
-      .baseVertex = static_cast<GLint>(this->vertices.size() - vertexCount),
-      .baseIndex = static_cast<GLint>(this->indices.size() - indexCount),
-      .indexCount = indexCount
+      .vertexAllocation = vertexAllocation,
+      .indexAllocation = indexAllocation,
     };
   }
 
-  void Renderer::clearMeshes()
+  void Renderer::deleteMesh(MeshHandle meshHandle)
   {
-    this->vertices.clear();
-    this->indices.clear();
+    vertexBufferAllocator.free(meshHandle.vertexAllocation);
+    indexBufferAllocator.free(meshHandle.indexAllocation);
   }
 
   void Renderer::setVertexAttributesForVertex()

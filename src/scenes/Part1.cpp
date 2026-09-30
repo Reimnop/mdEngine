@@ -29,7 +29,7 @@ Part1::Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr)
   for (auto i = 0; i < static_cast<int>(ShapeType::Count); i++)
   {
     auto mesh = makeShape(static_cast<ShapeType>(i));
-    meshes[i] = rendererPtr->addMesh(
+    meshes[i] = rendererPtr->createMesh(
       mesh.v.data(), static_cast<GLsizei>(mesh.v.size()),
       mesh.i.data(), static_cast<GLsizei>(mesh.i.size()));
   }
@@ -54,7 +54,8 @@ Part1::Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr)
 
 Part1::~Part1()
 {
-  rendererPtr->clearMeshes();
+  for (auto i = 0; i < static_cast<int>(ShapeType::Count); i++)
+    rendererPtr->deleteMesh(meshes[i]);
 }
 
 Entity& Part1::addEntity(const ShapeType shape)

@@ -1,13 +1,12 @@
 #pragma once
 
-#include <glad/gl.h>
+#include "core/memory/Allocation.h"
 
 namespace mdEngine
 {
   struct MeshHandle
   {
-    GLint baseVertex{};
-    GLint baseIndex{};
-    GLsizei indexCount{};
+    Allocation vertexAllocation{};
+    Allocation indexAllocation{};
   };
 } // mdEngine
