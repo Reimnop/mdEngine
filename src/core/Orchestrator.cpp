@@ -19,16 +19,17 @@ namespace mdEngine
     while (!window.getWindowShouldClose())
     {
       window.pollEvents();
+
       imgui.beginFrame();
 
       currentScene->update();
-      currentScene->render();
       currentScene->renderGui();
 
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      imgui.endFrame(); // drawn on top of the scene
+      imgui.endFrame();
+
       window.swapBuffers();
     }
   }

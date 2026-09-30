@@ -4,9 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "Shapes.h"
+#include "SceneBase.h"
 #include "core/Scene.h"
-#include "core/TrackballCamera.h"
 #include "core/Window.h"
 #include "core/rendering/Renderer.h"
 
@@ -35,30 +34,20 @@ struct Entity
   std::optional<size_t> texture; // index into Part1::textures
 };
 
-constexpr const char* FILL_MODE_NAMES[static_cast<int>(mdEngine::FillMode::Count)] = {"Solid", "Wireframe"};
-constexpr const char* SHADING_MODE_NAMES[static_cast<int>(mdEngine::ShadingMode::Count)] = {"Flat", "Gouraud", "Phong"};
-
-class Part1 : public mdEngine::Scene
+class Part1 : public SceneBase
 {
 public:
   Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr);
   ~Part1() override;
   void update() override;
-  void render() override;
+  void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj) override;
   void renderGui() override;
 private:
   Entity& addEntity(size_t mesh);
   void importObj(const std::string& path);
   void loadTexture(const std::string& path);
 
-  mdEngine::Renderer* rendererPtr;
-  mdEngine::TrackballCamera camera;
-
-  std::vector<mdEngine::DrawObj> drawObjs;
-  mdEngine::CameraObj cameraObj;
-  mdEngine::LightingObj lightingObj;
-
-  std::vector<MeshAsset> meshes; // built-in shapes first (same order as ShapeType), then imported OBJs
+  std::vector<MeshAsset> meshes;
   std::vector<TextureAsset> textures;
   std::vector<Entity> entities;
   size_t selectedNewMesh = 0;
