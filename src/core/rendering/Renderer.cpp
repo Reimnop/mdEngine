@@ -98,6 +98,15 @@ namespace mdEngine
     glViewport(0, 0, width, height);
 
     glEnable(GL_DEPTH_TEST);
+
+    if (lightingObj.fillMode == FillMode::Wireframe)
+      glDisable(GL_CULL_FACE);
+    else
+    {
+      glEnable(GL_CULL_FACE);
+      glFrontFace(GL_CCW);
+    }
+
     glPolygonMode(GL_FRONT_AND_BACK, lightingObj.fillMode == FillMode::Wireframe ? GL_LINE : GL_FILL);
 
     glUseProgram(this->program);
