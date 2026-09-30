@@ -65,8 +65,6 @@ void SceneBase::renderGui()
     const auto viewportSize = ImGui::GetContentRegionAvail();
 
     drawObjs.clear();
-    cameraObj = {};
-    lightingObj = {};
     render(drawObjs, cameraObj, lightingObj);
 
     const auto colorTex = rendererPtr->renderFrame(
