@@ -77,7 +77,10 @@ void Part1::renderGui()
   // draw imgui viewport window
   if (ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
   {
-    camera.update(ImGui::GetIO());
+    if (ImGui::IsWindowFocused())
+    {
+      camera.update(ImGui::GetIO());
+    }
 
     ImVec2 viewportSize = ImGui::GetContentRegionAvail();
     auto colorTex = rendererPtr->renderFrame(drawObjs.data(), drawObjs.size(), cameraObj, viewportSize.x, viewportSize.y);
