@@ -40,8 +40,9 @@ public:
   Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr);
   ~Part1() override;
   void update() override;
-  void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj) override;
   void renderGui() override;
+protected:
+  void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj) override;
 private:
   Entity& addEntity(size_t mesh);
   void importObj(const std::string& path);
