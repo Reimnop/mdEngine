@@ -59,9 +59,6 @@ namespace mdEngine
 
   void TrackballCamera::update(ImGuiIO& io)
   {
-    if (io.WantCaptureMouse)
-      return; // don't update camera if mouse is over a UI element
-
     updateDrag(io);
     updateZoom(io);
   }
