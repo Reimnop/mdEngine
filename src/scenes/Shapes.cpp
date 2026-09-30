@@ -76,8 +76,23 @@ namespace
       n = n * -1.0f;
     }
 
+    // planar uvs in the face's own plane, scaled uniformly into [0, 1]
+    const Vec3 t = normalize(pts[1] - pts[0]);
+    const Vec3 b = cross(n, t);
+    std::vector<Vec2> uvs;
+    for (const auto& p : pts) uvs.push_back({dot(p - pts[0], t), dot(p - pts[0], b)});
+
+    Vec2 lo = uvs[0], hi = uvs[0];
+    for (const auto& uv : uvs)
+    {
+      lo = {std::min(lo.x, uv.x), std::min(lo.y, uv.y)};
+      hi = {std::max(hi.x, uv.x), std::max(hi.y, uv.y)};
+    }
+    const float extent = std::max(hi.x - lo.x, hi.y - lo.y);
+
     const uint32_t base = vertexCount(m);
-    for (const auto& p : pts) m.v.push_back({p, n, {0, 0}});
+    for (size_t k = 0; k < pts.size(); k++)
+      m.v.push_back({pts[k], n, {(uvs[k].x - lo.x) / extent, (uvs[k].y - lo.y) / extent}});
     for (uint32_t k = 1; k + 1 < pts.size(); k++)
       addTri(m, base, base + k, base + k + 1);
   }
@@ -109,7 +124,7 @@ namespace
     for (int k = 0; k <= slices; k++)
     {
       const float a = 2 * PI * k / slices;
-      m.v.push_back({{radius * std::cos(a), y, radius * std::sin(a)}, n, {0, 0}});
+      m.v.push_back({{radius * std::cos(a), y, radius * std::sin(a)}, n, {0.5f + radius * std::cos(a), 0.5f + radius * std::sin(a)}});
     }
     for (int k = 0; k < slices; k++)
     {
@@ -174,7 +189,7 @@ namespace
     {
       const float theta = u * PI, phi = v * 2 * PI;
       const Vec3 n{std::sin(theta) * std::cos(phi), std::cos(theta), std::sin(theta) * std::sin(phi)};
-      return Vertex{n * 0.5f, n, {v, u}};
+      return Vertex{n * 0.5f, n, {v, 1.0f - u}};
     });
     return m;
   }
@@ -189,7 +204,7 @@ namespace
       const float a = v * 2 * PI;
       const float r = rt + (rb - rt) * u;
       const Vec3 n = normalize({std::cos(a), rb - rt, std::sin(a)});
-      return Vertex{{r * std::cos(a), 0.5f - u, r * std::sin(a)}, n, {v, u}};
+      return Vertex{{r * std::cos(a), 0.5f - u, r * std::sin(a)}, n, {v, 1.0f - u}};
     });
     if (capTop) addCap(m, 0.5f, rt, true, slices);
     if (capBottom) addCap(m, -0.5f, rb, false, slices);

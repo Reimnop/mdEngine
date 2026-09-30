@@ -23,7 +23,7 @@ uniform float uAmbient;
 void main() {
     vNormal = transpose(inverse(mat3(uModel))) * aNormal;
     vTexCoord = aTexCoord;
-    vFragPos = (uModel * uView * vec4(aPos, 1.0)).xyz;
+    vFragPos = (uView * uModel * vec4(aPos, 1.0)).xyz;
     gl_Position = uMvp * vec4(aPos, 1.0);
 
     if (uShadingMode == 1) {
