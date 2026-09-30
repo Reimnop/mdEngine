@@ -18,6 +18,9 @@ add_executable(mdEngine ${SOURCE_FILES} ${EXT_SOURCE_FILES} ${IMGUI_SOURCE_FILES
 add_subdirectory(glfw)
 target_link_libraries(mdEngine PRIVATE glfw)
 
+add_subdirectory(json)
+target_link_libraries(mdEngine PRIVATE nlohmann_json)
+
 target_include_directories(mdEngine PRIVATE "src" "include" "${IMGUI_DIR}" "${IMGUI_DIR}/backends")
 
 add_custom_command(

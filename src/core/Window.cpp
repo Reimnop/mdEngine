@@ -48,6 +48,11 @@ namespace mdEngine
     glfwGetWindowSize(this->window, &width, &height);
   }
 
+  double Window::getTime() const
+  {
+    return glfwGetTime();
+  }
+
   void Window::pollEvents() const
   {
     glfwPollEvents();

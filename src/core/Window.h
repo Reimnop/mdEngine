@@ -20,6 +20,8 @@ namespace mdEngine
     [[nodiscard]] bool getWindowShouldClose() const;
     void getSize(int& width, int& height) const;
 
+    double getTime() const;
+
     void pollEvents() const;
     void swapBuffers() const;
   private:

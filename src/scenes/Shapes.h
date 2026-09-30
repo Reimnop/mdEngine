@@ -28,5 +28,9 @@ inline bool is3D(const ShapeType t)
   return t >= ShapeType::Cube;
 }
 
+MeshData makeTorus(float R = 0.35f, float r = 0.15f);
+MeshData makeSphere();
+MeshData makeCylinder();
+
 // 2D shapes lie in the XY plane facing +Z, 3D shapes are centered at the origin. All fit in [-0.5, 0.5].
 MeshData makeShape(ShapeType type);

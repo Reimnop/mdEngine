@@ -1,6 +1,7 @@
 #include "Orchestrator.h"
 
 #include "scenes/Part1.h"
+#include "scenes/Part2.h"
 
 namespace mdEngine
 {
@@ -8,7 +9,7 @@ namespace mdEngine
     window(Window()),
     renderer(),
     imgui(&window),
-    currentScene(std::make_unique<Part1>(&renderer, &window))
+    currentScene(std::make_unique<Part2>(&renderer, &window))
   {
   }
 
@@ -16,13 +17,19 @@ namespace mdEngine
 
   void Orchestrator::start()
   {
+    double prevTime = window.getTime();
+
     while (!window.getWindowShouldClose())
     {
       window.pollEvents();
 
+      const double time = window.getTime();
+      const double deltaTime = time - prevTime;
+      prevTime = time;
+
       imgui.beginFrame();
 
-      currentScene->update();
+      currentScene->update(static_cast<float>(deltaTime));
       currentScene->renderGui();
 
       glBindFramebuffer(GL_FRAMEBUFFER, 0);

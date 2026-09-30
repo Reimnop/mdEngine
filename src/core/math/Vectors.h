@@ -136,6 +136,16 @@ namespace mdEngine
       const float len = std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
       return len > 1e-12f ? a / len : Vec3{0.0f, 0.0f, 0.0f};
     }
+
+    static float lengthSquared(const Vec3& a)
+    {
+      return a.x * a.x + a.y * a.y + a.z * a.z;
+    }
+
+    static float length(const Vec3& a)
+    {
+      return std::sqrt(lengthSquared(a));
+    }
   };
 
   struct Vec2

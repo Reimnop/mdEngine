@@ -216,7 +216,7 @@ namespace mdEngine
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
   }
 
-  MeshHandle Renderer::createMesh(Vertex* vertices, const GLsizei vertexCount, uint32_t* indices, const GLsizei indexCount)
+  MeshHandle Renderer::createMesh(const Vertex* vertices, const GLsizei vertexCount, const uint32_t* indices, const GLsizei indexCount)
   {
     this->meshesDirty = true;
 

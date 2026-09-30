@@ -21,7 +21,7 @@ namespace
   {
     if (s.size() >= 2 && s.front() == '"' && s.back() == '"') // "Copy as path" on Windows
       s = s.substr(1, s.size() - 2);
-    return std::filesystem::path(reinterpret_cast<const char8_t*>(s.c_str()));
+    return s;
   }
 
   // a textured entity usually wants the texture's own colors, so the tint is reset to white
@@ -29,7 +29,7 @@ namespace
   {
     e.texture = texture;
     if (texture.has_value())
-      e.color = {1.0f, 1.0f, 1.0f};
+      e.color = {.x = 1.0f, .y = 1.0f, .z = 1.0f};
   }
 
   mdEngine::Mat4 getTransform(const Entity& e)
@@ -61,12 +61,13 @@ Part1::Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr): Scen
     auto& e = addEntity(i);
     if (is3D(shape))
     {
-      e.position = {(static_cast<float>(col3D++) - 3.5f) * 1.4f, -1.0f, 0.0f};
-      e.rotation = {25.0f, 35.0f, 0.0f};
+      e.position = {.x = (static_cast<float>(col3D++) - 3.5f) * 1.4f, .y = -1.0f, .z = 0.0f};
+      e.rotation = {.x = 25.0f, .y = 35.0f, .z = 0.0f};
     }
     else
     {
-      e.position = {(static_cast<float>(col2D++) - 4.0f) * 1.4f, 1.0f, 0.0f};
+      e.position = {.x = (static_cast<float>(col2D++) - 4.0f) * 1.4f, .y = 1.0f, .z = 0.0f};
+      e.rotation = {.x = 0.0f, .y = 0.0f, .z = 0.0f};
     }
   }
 }
@@ -86,9 +87,9 @@ Entity& Part1::addEntity(const size_t mesh)
   Entity e;
   e.name = meshes[mesh].name + " " + std::to_string(newEntityCounter);
   e.mesh = mesh;
-  e.position = {0.0f, 0.0f, 0.0f};
-  e.rotation = {0.0f, 0.0f, 0.0f};
-  e.scale = {1.0f, 1.0f, 1.0f};
+  e.position = {.x = 0.0f, .y = 0.0f, .z = 0.0f};
+  e.rotation = {.x = 0.0f, .y = 0.0f, .z = 0.0f};
+  e.scale = {.x = 1.0f, .y = 1.0f, .z = 1.0f};
   e.color = PALETTE[newEntityCounter % std::size(PALETTE)];
   entities.push_back(e);
   return entities.back();
@@ -102,7 +103,7 @@ void Part1::importObj(const std::string& path)
     auto mesh = loadObj(fsPath);
 
     const auto stem = fsPath.stem().u8string();
-    meshes.push_back({std::string(stem.begin(), stem.end()), rendererPtr->createMesh(
+    meshes.push_back({.name = std::string(stem.begin(), stem.end()), .handle = rendererPtr->createMesh(
       mesh.v.data(), static_cast<GLsizei>(mesh.v.size()),
       mesh.i.data(), static_cast<GLsizei>(mesh.i.size()))});
 
@@ -127,9 +128,10 @@ void Part1::loadTexture(const std::string& path)
 
     const auto stem = fsPath.stem().u8string();
     textures.push_back({
-      std::string(stem.begin(), stem.end()),
-      rendererPtr->createTexture(image.width, image.height, image.pixels.data()),
-      image.width, image.height});
+      .name = std::string(stem.begin(), stem.end()),
+      .handle = rendererPtr->createTexture(image.width, image.height, image.pixels.data()),
+      .width = image.width,
+      .height = image.height});
 
     textureStatus = "Loaded " + textures.back().name + " (" + std::to_string(image.width) + "x" + std::to_string(image.height) + ")";
     if (selectedEntityIdx.has_value())
@@ -145,7 +147,7 @@ void Part1::loadTexture(const std::string& path)
   }
 }
 
-void Part1::update()
+void Part1::update(float deltaTime)
 {
 }
 
