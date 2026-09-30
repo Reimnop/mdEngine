@@ -1,0 +1,6 @@
+{
+  "name": "Aluminium",
+  "color": "#BFA6A6",
+  "radius": 0.37,
+  "shells": [2, 8, 3]
+}

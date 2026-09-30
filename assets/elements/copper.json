@@ -1,0 +1,6 @@
+{
+  "name": "Copper",
+  "color": "#C88033",
+  "radius": 0.4,
+  "shells": [2, 8, 18, 1]
+}

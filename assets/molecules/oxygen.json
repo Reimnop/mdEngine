@@ -1,0 +1,18 @@
+{
+  "name": "Oxygen (O2)",
+  "atoms": [
+    {
+      "radius": 0.3,
+      "position": [0.6038, 0.0, 0.0],
+      "color": "#FF0D0D"
+    },
+    {
+      "radius": 0.3,
+      "position": [-0.6038, 0.0, 0.0],
+      "color": "#FF0D0D"
+    }
+  ],
+  "connections": [
+    [0, 1, 2]
+  ]
+}

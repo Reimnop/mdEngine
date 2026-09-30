@@ -1,0 +1,6 @@
+{
+  "name": "Neon",
+  "color": "#B3E3F5",
+  "radius": 0.31,
+  "shells": [2, 8]
+}

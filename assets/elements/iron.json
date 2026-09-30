@@ -1,0 +1,6 @@
+{
+  "name": "Iron",
+  "color": "#E06633",
+  "radius": 0.41,
+  "shells": [2, 8, 14, 2]
+}

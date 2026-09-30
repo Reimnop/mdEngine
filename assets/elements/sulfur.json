@@ -1,0 +1,6 @@
+{
+  "name": "Sulfur",
+  "color": "#FFFF30",
+  "radius": 0.36,
+  "shells": [2, 8, 6]
+}

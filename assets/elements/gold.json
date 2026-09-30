@@ -1,0 +1,6 @@
+{
+  "name": "Gold",
+  "color": "#FFD123",
+  "radius": 0.42,
+  "shells": [2, 8, 18, 32, 18, 1]
+}

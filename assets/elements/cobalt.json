@@ -1,0 +1,6 @@
+{
+  "name": "Cobalt",
+  "color": "#F090A0",
+  "radius": 0.4,
+  "shells": [2, 8, 15, 2]
+}

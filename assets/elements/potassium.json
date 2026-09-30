@@ -1,0 +1,6 @@
+{
+  "name": "Potassium",
+  "color": "#8F40D4",
+  "radius": 0.55,
+  "shells": [2, 8, 8, 1]
+}

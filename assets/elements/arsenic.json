@@ -1,0 +1,6 @@
+{
+  "name": "Arsenic",
+  "color": "#BD80E3",
+  "radius": 0.37,
+  "shells": [2, 8, 18, 5]
+}

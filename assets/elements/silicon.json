@@ -1,0 +1,6 @@
+{
+  "name": "Silicon",
+  "color": "#F0C8A0",
+  "radius": 0.42,
+  "shells": [2, 8, 4]
+}

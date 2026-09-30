@@ -1,0 +1,6 @@
+{
+  "name": "Zinc",
+  "color": "#7D80B0",
+  "radius": 0.42,
+  "shells": [2, 8, 18, 2]
+}

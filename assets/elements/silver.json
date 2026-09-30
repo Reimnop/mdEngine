@@ -1,0 +1,6 @@
+{
+  "name": "Silver",
+  "color": "#C0C0C0",
+  "radius": 0.42,
+  "shells": [2, 8, 18, 18, 1]
+}

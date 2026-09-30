@@ -1,0 +1,6 @@
+{
+  "name": "Selenium",
+  "color": "#FFA100",
+  "radius": 0.38,
+  "shells": [2, 8, 18, 6]
+}

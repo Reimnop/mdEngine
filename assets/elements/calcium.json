@@ -1,0 +1,6 @@
+{
+  "name": "Calcium",
+  "color": "#3DFF00",
+  "radius": 0.46,
+  "shells": [2, 8, 8, 2]
+}

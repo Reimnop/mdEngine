@@ -1,0 +1,54 @@
+{
+  "name": "Ethane (C2H6)",
+  "atoms": [
+    {
+      "radius": 0.34,
+      "position": [0.756, 0.0, 0.0],
+      "color": "#909090"
+    },
+    {
+      "radius": 0.34,
+      "position": [-0.756, 0.0, 0.0],
+      "color": "#909090"
+    },
+    {
+      "radius": 0.22,
+      "position": [1.1404, 0.8777, -0.5281],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [1.1404, 0.0186, 1.0241],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [1.1405, -0.8962, -0.496],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [-1.1404, -0.0186, -1.0241],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [-1.1405, 0.8962, 0.496],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [-1.1404, -0.8777, 0.5281],
+      "color": "#FFFFFF"
+    }
+  ],
+  "connections": [
+    [0, 1, 1],
+    [0, 2, 1],
+    [0, 3, 1],
+    [0, 4, 1],
+    [1, 5, 1],
+    [1, 6, 1],
+    [1, 7, 1]
+  ]
+}

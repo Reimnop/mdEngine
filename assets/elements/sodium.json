@@ -1,0 +1,6 @@
+{
+  "name": "Sodium",
+  "color": "#AB5CF2",
+  "radius": 0.45,
+  "shells": [2, 8, 1]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Methane (CH4)",
+  "atoms": [
+    {
+      "radius": 0.34,
+      "position": [0.0, 0.0, 0.0],
+      "color": "#909090"
+    },
+    {
+      "radius": 0.22,
+      "position": [0.6276, 0.0, -0.8875],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [0.6276, 0.0, 0.8875],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [-0.6276, -0.8875, 0.0],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [-0.6276, 0.8875, 0.0],
+      "color": "#FFFFFF"
+    }
+  ],
+  "connections": [
+    [0, 1, 1],
+    [0, 2, 1],
+    [0, 3, 1],
+    [0, 4, 1]
+  ]
+}

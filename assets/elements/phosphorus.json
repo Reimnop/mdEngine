@@ -1,0 +1,6 @@
+{
+  "name": "Phosphorus",
+  "color": "#FF8000",
+  "radius": 0.36,
+  "shells": [2, 8, 5]
+}

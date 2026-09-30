@@ -1,0 +1,24 @@
+{
+  "name": "Sulfur Dioxide (SO2)",
+  "atoms": [
+    {
+      "radius": 0.36,
+      "position": [0.0, -0.4809, 0.0],
+      "color": "#FFFF30"
+    },
+    {
+      "radius": 0.3,
+      "position": [1.237, 0.2405, 0.0],
+      "color": "#FF0D0D"
+    },
+    {
+      "radius": 0.3,
+      "position": [-1.237, 0.2405, 0.0],
+      "color": "#FF0D0D"
+    }
+  ],
+  "connections": [
+    [0, 1, 2],
+    [0, 2, 2]
+  ]
+}

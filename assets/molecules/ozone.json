@@ -1,0 +1,24 @@
+{
+  "name": "Ozone (O3)",
+  "atoms": [
+    {
+      "radius": 0.3,
+      "position": [0.0, -0.4443, 0.0],
+      "color": "#FF0D0D"
+    },
+    {
+      "radius": 0.3,
+      "position": [1.0834, 0.2222, 0.0],
+      "color": "#FF0D0D"
+    },
+    {
+      "radius": 0.3,
+      "position": [-1.0834, 0.2222, 0.0],
+      "color": "#FF0D0D"
+    }
+  ],
+  "connections": [
+    [0, 1, 1],
+    [0, 2, 2]
+  ]
+}

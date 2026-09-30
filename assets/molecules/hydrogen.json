@@ -1,0 +1,18 @@
+{
+  "name": "Hydrogen (H2)",
+  "atoms": [
+    {
+      "radius": 0.22,
+      "position": [0.3707, 0.0, 0.0],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [-0.3707, 0.0, 0.0],
+      "color": "#FFFFFF"
+    }
+  ],
+  "connections": [
+    [0, 1, 1]
+  ]
+}

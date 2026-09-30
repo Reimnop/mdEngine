@@ -1,0 +1,30 @@
+{
+  "name": "Ammonia (NH3)",
+  "atoms": [
+    {
+      "radius": 0.31,
+      "position": [0.0, 0.0, -0.2858],
+      "color": "#3050F8"
+    },
+    {
+      "radius": 0.22,
+      "position": [-0.8044, -0.4815, 0.0953],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [-0.0148, 0.9374, 0.0953],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [0.8192, -0.4559, 0.0953],
+      "color": "#FFFFFF"
+    }
+  ],
+  "connections": [
+    [0, 1, 1],
+    [0, 2, 1],
+    [0, 3, 1]
+  ]
+}

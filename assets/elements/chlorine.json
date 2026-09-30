@@ -1,0 +1,6 @@
+{
+  "name": "Chlorine",
+  "color": "#1FF01F",
+  "radius": 0.35,
+  "shells": [2, 8, 7]
+}

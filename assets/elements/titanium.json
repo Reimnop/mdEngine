@@ -1,0 +1,6 @@
+{
+  "name": "Titanium",
+  "color": "#BFC2C7",
+  "radius": 0.43,
+  "shells": [2, 8, 10, 2]
+}

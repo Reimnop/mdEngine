@@ -1,0 +1,24 @@
+{
+  "name": "Water (H2O)",
+  "atoms": [
+    {
+      "radius": 0.3,
+      "position": [0.0, -0.3906, 0.0],
+      "color": "#FF0D0D"
+    },
+    {
+      "radius": 0.22,
+      "position": [0.757, 0.1953, 0.0],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [-0.757, 0.1953, 0.0],
+      "color": "#FFFFFF"
+    }
+  ],
+  "connections": [
+    [0, 1, 1],
+    [0, 2, 1]
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Germanium",
+  "color": "#668F8F",
+  "radius": 0.42,
+  "shells": [2, 8, 18, 4]
+}

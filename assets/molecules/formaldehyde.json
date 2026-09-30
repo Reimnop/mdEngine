@@ -1,0 +1,30 @@
+{
+  "name": "Formaldehyde (CH2O)",
+  "atoms": [
+    {
+      "radius": 0.3,
+      "position": [-1.2123, -0.0001, 0.0],
+      "color": "#FF0D0D"
+    },
+    {
+      "radius": 0.34,
+      "position": [0.0123, 0.0, 0.0],
+      "color": "#909090"
+    },
+    {
+      "radius": 0.22,
+      "position": [0.6001, -0.9319, 0.0],
+      "color": "#FFFFFF"
+    },
+    {
+      "radius": 0.22,
+      "position": [0.5999, 0.9319, 0.0],
+      "color": "#FFFFFF"
+    }
+  ],
+  "connections": [
+    [0, 1, 2],
+    [1, 2, 1],
+    [1, 3, 1]
+  ]
+}

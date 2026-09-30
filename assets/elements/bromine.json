@@ -1,0 +1,6 @@
+{
+  "name": "Bromine",
+  "color": "#A62929",
+  "radius": 0.37,
+  "shells": [2, 8, 18, 7]
+}
