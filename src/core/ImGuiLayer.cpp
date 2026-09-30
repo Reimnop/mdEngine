@@ -15,6 +15,8 @@ namespace mdEngine
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable;
     io.ConfigWindowsMoveFromTitleBarOnly = true;
 
+    io.Fonts->AddFontFromFileTTF("assets/NotoSansMono-Regular.ttf", 18.0f);
+
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(windowPtr->getHandle(), true);
