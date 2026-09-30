@@ -67,6 +67,7 @@ namespace mdEngine
     this->uLightDirLocation = glGetUniformLocation(this->program, "uLightDir");
     this->uLightColorLocation = glGetUniformLocation(this->program, "uLightColor");
     this->uAmbientLocation = glGetUniformLocation(this->program, "uAmbient");
+    this->uUseTextureLocation = glGetUniformLocation(this->program, "uUseTexture");
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
@@ -119,6 +120,7 @@ namespace mdEngine
       glUniformMatrix4fv(this->uModelLocation, 1, GL_TRUE, drawObj.transform.m);
       glUniform3f(this->uColorLocation, drawObj.color.x, drawObj.color.y, drawObj.color.z);
       glUniform1f(this->uShininessLocation, drawObj.shininess);
+      glUniform1i(this->uUseTextureLocation, drawObj.texture.has_value() ? 1 : 0);
       glBindTexture(GL_TEXTURE_2D, drawObj.texture.has_value() ? drawObj.texture.value().handle : 0);
       glDrawElementsBaseVertex(
         GL_TRIANGLES,

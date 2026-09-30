@@ -42,6 +42,7 @@ namespace mdEngine
     GLint uLightDirLocation = 0;
     GLint uLightColorLocation = 0;
     GLint uAmbientLocation = 0;
+    GLint uUseTextureLocation = 0;
 
     GLuint fbo = 0;
     GLuint colorTex = 0, depthRbo = 0;
