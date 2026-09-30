@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <imgui.h>
 
 namespace mdEngine
 {
@@ -56,10 +57,13 @@ namespace mdEngine
   {
   }
 
-  void TrackballCamera::update()
+  void TrackballCamera::update(ImGuiIO& io)
   {
-    updateDrag();
-    updateZoom();
+    if (io.WantCaptureMouse)
+      return; // don't update camera if mouse is over a UI element
+
+    updateDrag(io);
+    updateZoom(io);
   }
 
   void TrackballCamera::reset()
@@ -87,20 +91,19 @@ namespace mdEngine
     distance = std::clamp(distance, minDistance, maxDistance);
   }
 
-  void TrackballCamera::updateDrag()
+  void TrackballCamera::updateDrag(ImGuiIO& io)
   {
     DragMode mode = DragMode::None;
-    if (windowPtr->isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+    if (io.MouseDown[ImGuiMouseButton_Left])
     {
       mode = DragMode::Rotate;
     }
-    else if (windowPtr->isMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT) || windowPtr->isMouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE))
+    else if (io.MouseDown[ImGuiMouseButton_Right] || io.MouseDown[ImGuiMouseButton_Middle])
     {
       mode = DragMode::Pan;
     }
 
-    double x, y;
-    windowPtr->getCursorPos(x, y);
+    float x = io.MousePos.x, y = io.MousePos.y;
 
     // Starting (or switching) a drag only records the cursor position.
     const bool started = mode != dragMode;
@@ -157,12 +160,12 @@ namespace mdEngine
     target.z -= vx * m[2] + vy * m[6];
   }
 
-  void TrackballCamera::updateZoom()
+  void TrackballCamera::updateZoom(ImGuiIO& io)
   {
-    const double scroll = windowPtr->consumeScrollDelta();
-    if (scroll == 0.0) return;
+    const float scroll = io.MouseWheel;
+    if (scroll == 0.0f) return;
 
     // Exponential zoom feels uniform at any distance; scrolling up zooms in.
-    setDistance(distance * std::exp(static_cast<float>(-scroll) * zoomSpeed));
+    setDistance(distance * std::exp(-scroll * zoomSpeed));
   }
 } // mdEngine

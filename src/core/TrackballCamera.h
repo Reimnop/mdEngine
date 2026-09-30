@@ -1,5 +1,7 @@
 #pragma once
 
+#include <imgui.h>
+
 #include "core/Window.h"
 #include "core/data/CameraObj.h"
 #include "core/math/Matrices.h"
@@ -15,7 +17,7 @@ namespace mdEngine
   public:
     explicit TrackballCamera(Window* windowPtr, float distance = 5.0f);
 
-    void update();
+    void update(ImGuiIO& io);
     void reset();
 
     [[nodiscard]] Mat4 getViewMatrix() const;
@@ -28,18 +30,18 @@ namespace mdEngine
   private:
     enum class DragMode { None, Rotate, Pan };
 
-    void updateDrag();
+    void updateDrag(ImGuiIO& io);
     void rotateBy(double x, double y, int w, int h);
     void panBy(double x, double y, int h);
-    void updateZoom();
+    void updateZoom(ImGuiIO& io);
 
     Window* windowPtr;
 
     Mat4 rotation{};
     Vec3 target{}; // world-space point the camera orbits around
     DragMode dragMode = DragMode::None;
-    double lastX = 0.0;
-    double lastY = 0.0;
+    float lastX = 0.0f;
+    float lastY = 0.0f;
 
     float fov = CameraObj{}.fov;
 

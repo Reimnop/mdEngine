@@ -11,10 +11,14 @@ public:
   Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr);
   ~Part1() override;
   void update() override;
-  void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj) override;
+  void renderGui() override;
+  void render() override;
 private:
   mdEngine::Renderer* rendererPtr;
   mdEngine::TrackballCamera camera;
+
+  std::vector<mdEngine::DrawObj> drawObjs;
+  mdEngine::CameraObj cameraObj;
 
   mdEngine::MeshHandle mesh;
 };

@@ -1,6 +1,7 @@
 #include "Part1.h"
 
 #include <cmath>
+#include <imgui.h>
 
 #include "core/data/Vertex.h"
 
@@ -48,11 +49,41 @@ Part1::~Part1()
 
 void Part1::update()
 {
-  camera.update();
 }
 
-void Part1::render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj)
+void Part1::render()
 {
   cameraObj.view = camera.getViewMatrix();
+
+  drawObjs.clear();
   drawObjs.push_back({ .meshHandle = mesh });
 }
+
+
+void Part1::renderGui()
+{
+  ImGui::DockSpaceOverViewport();
+
+  ImGui::Begin("Camera");
+  ImGui::Text("Left drag: rotate | Right/middle drag: pan | Scroll: zoom");
+  ImGui::Text("Distance: %.2f", camera.getDistance());
+  if (ImGui::Button("Reset"))
+  {
+    camera.reset();
+  }
+  ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
+  ImGui::End();
+
+  // draw imgui viewport window
+  if (ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+  {
+    camera.update(ImGui::GetIO());
+
+    ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+    auto colorTex = rendererPtr->renderFrame(drawObjs.data(), drawObjs.size(), cameraObj, viewportSize.x, viewportSize.y);
+
+    ImGui::Image(colorTex, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
+  }
+  ImGui::End();
+}
+

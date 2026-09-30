@@ -4,7 +4,11 @@
 
 namespace mdEngine
 {
-  Orchestrator::Orchestrator(): window(Window()), renderer(&window), currentScene(std::make_unique<Part1>(&renderer, &window))
+  Orchestrator::Orchestrator():
+    window(Window()),
+    renderer(),
+    imgui(&window),
+    currentScene(std::make_unique<Part1>(&renderer, &window))
   {
   }
 
@@ -15,14 +19,15 @@ namespace mdEngine
     while (!window.getWindowShouldClose())
     {
       window.pollEvents();
-
-      drawObjs.clear();
-      cameraObj = CameraObj();
+      imgui.beginFrame();
 
       currentScene->update();
-      currentScene->render(drawObjs, cameraObj);
+      currentScene->render();
+      currentScene->renderGui();
 
-      renderer.renderFrame(drawObjs.data(), drawObjs.size(), cameraObj);
+      glClear(GL_COLOR_BUFFER_BIT);
+
+      imgui.endFrame(); // drawn on top of the scene
       window.swapBuffers();
     }
   }

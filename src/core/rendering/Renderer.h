@@ -14,16 +14,14 @@ namespace mdEngine
   class Renderer
   {
   public:
-    Renderer(Window* windowPtr);
+    Renderer();
     ~Renderer();
 
-    void renderFrame(const DrawObj* drawObjs, size_t drawObjCount, const CameraObj& cameraObj);
+    GLuint renderFrame(const DrawObj* drawObjs, size_t drawObjCount, const CameraObj& cameraObj, int width, int height);
 
     MeshHandle addMesh(Vertex* vertices, GLsizei vertexCount, uint32_t* indices, GLsizei indexCount);
     void clearMeshes();
   private:
-    Window* windowPtr;
-
     GLuint vao = 0, vbo = 0, ebo = 0;
     GLsizei vboSize = 1024;
     GLsizei eboSize = 1024;
@@ -37,7 +35,7 @@ namespace mdEngine
     GLint uMvpLocation = 0;
 
     GLuint fbo;
-    GLuint colorRbo, depthRbo;
+    GLuint colorTex, depthRbo;
     int fboWidth = 1280, fboHeight = 720;
 
     void handleMeshUpdates();

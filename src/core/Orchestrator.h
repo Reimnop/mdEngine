@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "ImGuiLayer.h"
 #include "Scene.h"
 #include "rendering/Renderer.h"
 
@@ -17,9 +18,7 @@ namespace mdEngine
   private:
     Window window;
     Renderer renderer;
-
-    std::vector<DrawObj> drawObjs{};
-    CameraObj cameraObj{};
+    ImGuiLayer imgui;
 
     std::unique_ptr<Scene> currentScene;
   };

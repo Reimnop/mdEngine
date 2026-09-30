@@ -6,7 +6,7 @@
 
 namespace mdEngine
 {
-  Renderer::Renderer(Window* windowPtr): windowPtr(windowPtr)
+  Renderer::Renderer()
   {
     // init initial mesh
     glGenBuffers(1, &this->vbo);
@@ -26,10 +26,12 @@ namespace mdEngine
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glGenRenderbuffers(1, &colorRbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, colorRbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, fboWidth, fboHeight);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRbo);
+    glGenTextures(1, &colorTex);
+    glBindTexture(GL_TEXTURE_2D, colorTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTex, 0);
 
     glGenRenderbuffers(1, &depthRbo);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
@@ -65,16 +67,13 @@ namespace mdEngine
   {
     glDeleteVertexArrays(1, &this->vao);
     glDeleteFramebuffers(1, &fbo);
-    glDeleteRenderbuffers(1, &colorRbo);
+    glDeleteTextures(1, &colorTex);
     glDeleteRenderbuffers(1, &depthRbo);
     glDeleteProgram(this->program);
   }
 
-  void Renderer::renderFrame(const DrawObj* drawObjs, const size_t drawObjCount, const CameraObj& cameraObj)
+  GLuint Renderer::renderFrame(const DrawObj* drawObjs, const size_t drawObjCount, const CameraObj& cameraObj, const int width, const int height)
   {
-    int width, height;
-    windowPtr->getSize(width, height);
-
     float aspect = static_cast<float>(width) / static_cast<float>(height);
     auto proj = Mat4::perspective(cameraObj.fov, aspect, 0.1f, 1000.0f);
 
@@ -106,12 +105,9 @@ namespace mdEngine
         mesh.baseVertex);
     }
 
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBlitFramebuffer(
-      0, 0, width, height,
-      0, 0, width, height,
-      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return this->colorTex;
   }
 
   void Renderer::handleMeshUpdates()
@@ -170,15 +166,17 @@ namespace mdEngine
     this->fboHeight = height;
 
     // delete, create new
-    glDeleteRenderbuffers(1, &colorRbo);
+    glDeleteTextures(1, &colorTex);
     glDeleteRenderbuffers(1, &depthRbo);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glGenRenderbuffers(1, &colorRbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, colorRbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, fboWidth, fboHeight);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRbo);
+    glGenTextures(1, &colorTex);
+    glBindTexture(GL_TEXTURE_2D, colorTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTex, 0);
 
     glGenRenderbuffers(1, &depthRbo);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
