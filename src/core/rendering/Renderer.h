@@ -4,6 +4,7 @@
 #include <glad/gl.h>
 
 #include "MeshHandle.h"
+#include "TextureHandle.h"
 #include "core/Window.h"
 #include "core/data/CameraObj.h"
 #include "core/data/DrawObj.h"
@@ -26,18 +27,10 @@ namespace mdEngine
 
     MeshHandle createMesh(Vertex* vertices, GLsizei vertexCount, uint32_t* indices, GLsizei indexCount);
     void deleteMesh(MeshHandle meshHandle);
+
+    TextureHandle createTexture(GLsizei width, GLsizei height, const void* data);
+    void deleteTexture(TextureHandle textureHandle);
   private:
-    GLuint vao = 0, vbo = 0, ebo = 0;
-    GLsizei vboSize = 1024;
-    GLsizei eboSize = 1024;
-
-    std::vector<Vertex> vertices = std::vector<Vertex>(vboSize);
-    std::vector<uint32_t> indices = std::vector<uint32_t>(eboSize);
-    PooledSuballocator vertexBufferAllocator{};
-    PooledSuballocator indexBufferAllocator{};
-
-    bool meshesDirty = true;
-
     GLuint program = 0;
     GLint uMvpLocation = 0;
     GLint uModelLocation = 0;
@@ -53,6 +46,17 @@ namespace mdEngine
     GLuint fbo = 0;
     GLuint colorTex = 0, depthRbo = 0;
     int fboWidth = 1280, fboHeight = 720;
+
+    GLuint vao = 0, vbo = 0, ebo = 0;
+    GLsizei vboSize = 1024;
+    GLsizei eboSize = 1024;
+
+    std::vector<Vertex> vertices = std::vector<Vertex>(vboSize);
+    std::vector<uint32_t> indices = std::vector<uint32_t>(eboSize);
+    PooledSuballocator vertexBufferAllocator{};
+    PooledSuballocator indexBufferAllocator{};
+
+    bool meshesDirty = true;
 
     void handleMeshUpdates();
     void handleFboResize(int width, int height);

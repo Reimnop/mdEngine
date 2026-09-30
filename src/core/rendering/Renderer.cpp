@@ -97,6 +97,7 @@ namespace mdEngine
     glViewport(0, 0, width, height);
 
     glEnable(GL_DEPTH_TEST);
+    glPolygonMode(GL_FRONT_AND_BACK, lightingObj.fillMode == FillMode::Wireframe ? GL_LINE : GL_FILL);
 
     glUseProgram(this->program);
     glBindVertexArray(this->vao);
@@ -106,8 +107,6 @@ namespace mdEngine
     glUniform1f(this->uAmbientLocation, lightingObj.ambient);
     glUniform1i(this->uShadingModeLocation, static_cast<GLint>(lightingObj.shadingMode));
     glUniform1f(this->uSpecularStrengthLocation, lightingObj.specularStrength);
-
-    glPolygonMode(GL_FRONT_AND_BACK, lightingObj.fillMode == FillMode::Wireframe ? GL_LINE : GL_FILL);
 
     for (size_t i = 0; i < drawObjCount; i++)
     {
@@ -120,6 +119,7 @@ namespace mdEngine
       glUniformMatrix4fv(this->uModelLocation, 1, GL_TRUE, drawObj.transform.m);
       glUniform3f(this->uColorLocation, drawObj.color.x, drawObj.color.y, drawObj.color.z);
       glUniform1f(this->uShininessLocation, drawObj.shininess);
+      glBindTexture(GL_TEXTURE_2D, drawObj.texture.has_value() ? drawObj.texture.value().handle : 0);
       glDrawElementsBaseVertex(
         GL_TRIANGLES,
         mesh.indexCount,
@@ -238,6 +238,23 @@ namespace mdEngine
   {
     vertexBufferAllocator.free(meshHandle.vertexAllocation);
     indexBufferAllocator.free(meshHandle.indexAllocation);
+  }
+
+  TextureHandle Renderer::createTexture(GLsizei width, GLsizei height, const void* data)
+  {
+    GLuint texHandle;
+    glGenTextures(1, &texHandle);
+    glBindTexture(GL_TEXTURE_2D, texHandle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    return TextureHandle{.handle = texHandle};
+  }
+
+  void Renderer::deleteTexture(TextureHandle textureHandle)
+  {
+    glDeleteTextures(1, &textureHandle.handle);
   }
 
   void Renderer::setVertexAttributesForVertex()

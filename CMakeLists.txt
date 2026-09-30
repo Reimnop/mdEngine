@@ -3,16 +3,13 @@ project(mdEngine)
 
 set(CMAKE_CXX_STANDARD 20)
 
-file(GLOB_RECURSE SOURCE_FILES "src/*.cpp" "src/*.c" "src/*.h" "src/*.hpp")
+file(GLOB_RECURSE SOURCE_FILES "src/*.cpp" "src/*.c")
 file(GLOB_RECURSE EXT_SOURCE_FILES "ext/*.cpp" "ext/*.c")
 
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/imgui")
-set(IMGUI_SOURCE_FILES
-    "${IMGUI_DIR}/imgui.cpp"
-    "${IMGUI_DIR}/imgui_draw.cpp"
-    "${IMGUI_DIR}/imgui_tables.cpp"
-    "${IMGUI_DIR}/imgui_widgets.cpp"
-    "${IMGUI_DIR}/imgui_demo.cpp"
+
+file(GLOB IMGUI_SOURCE_FILES "${IMGUI_DIR}/*.cpp")
+set(IMGUI_SOURCE_FILES ${IMGUI_SOURCE_FILES}
     "${IMGUI_DIR}/backends/imgui_impl_glfw.cpp"
     "${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp")
 

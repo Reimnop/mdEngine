@@ -15,15 +15,20 @@ uniform float uSpecularStrength;
 uniform vec3 uLightDir;
 uniform vec3 uLightColor;
 uniform float uAmbient;
+uniform bool uUseTexture;
+
+uniform sampler2D uTexture;
 
 void main() {
+    vec4 textureColor = uUseTexture ? texture(uTexture, vTexCoord) : vec4(1.0);
+
     if (uShadingMode == 0) {
-        oFragColor = vec4(uColor, 1.0);
+        oFragColor = vec4(uColor, 1.0) * textureColor;
         return;
     }
 
     if (uShadingMode == 1) {
-        oFragColor = vec4(vGouroudColor, 1.0);
+        oFragColor = vec4(vGouroudColor, 1.0) * textureColor;
         return;
     }
 
@@ -34,7 +39,7 @@ void main() {
         vec3 viewDir = normalize(-vFragPos);
         vec3 reflectDir = reflect(transpose(inverse(mat3(uView))) * -light, transpose(inverse(mat3(uView))) * n);
         vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0), uShininess) * uLightColor;
-        oFragColor = vec4((diffuse + specular * uSpecularStrength + vec3(uAmbient)) * uColor, 1.0);
+        oFragColor = vec4((diffuse + specular * uSpecularStrength + vec3(uAmbient)) * uColor, 1.0) * textureColor;
         return;
     }
 }
