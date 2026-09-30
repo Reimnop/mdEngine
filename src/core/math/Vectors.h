@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 namespace mdEngine
 {
   struct Vec4
@@ -122,6 +124,17 @@ namespace mdEngine
     Vec3 operator/(const float scalar) const
     {
       return Vec3{.x = this->x / scalar, .y = this->y / scalar, .z = this->z / scalar};
+    }
+
+    static Vec3 cross(const Vec3& a, const Vec3& b)
+    {
+      return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+    }
+
+    static Vec3 normalize(const Vec3& a)
+    {
+      const float len = std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+      return len > 1e-12f ? a / len : Vec3{0.0f, 0.0f, 0.0f};
     }
   };
 

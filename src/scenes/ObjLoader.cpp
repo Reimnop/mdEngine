@@ -19,17 +19,6 @@ namespace
     int v = -1, t = -1, n = -1; // -1 when absent
   };
 
-  Vec3 cross(const Vec3& a, const Vec3& b)
-  {
-    return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
-  }
-
-  Vec3 safeNormalize(const Vec3& a)
-  {
-    const float len = std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-    return len > 1e-12f ? a / len : Vec3{0.0f, 1.0f, 0.0f};
-  }
-
   // OBJ indices are 1-based, negative ones count back from the end
   int resolveIndex(const long index, const size_t count)
   {
@@ -138,7 +127,7 @@ MeshData loadObj(const std::filesystem::path& path)
   std::vector<Vec3> smooth(positions.size());
   for (const auto& t : triangles)
   {
-    const Vec3 n = cross(positions[t[1].v] - positions[t[0].v], positions[t[2].v] - positions[t[0].v]);
+    const Vec3 n = Vec3::cross(positions[t[1].v] - positions[t[0].v], positions[t[2].v] - positions[t[0].v]);
     for (const auto& c : t)
       smooth[c.v] += n;
   }
@@ -151,7 +140,7 @@ MeshData loadObj(const std::filesystem::path& path)
       const auto [it, inserted] = lookup.try_emplace({c.v, c.t, c.n}, static_cast<uint32_t>(m.v.size()));
       if (inserted)
       {
-        const Vec3 normal = safeNormalize(c.n >= 0 ? normals[c.n] : smooth[c.v]);
+        const Vec3 normal = Vec3::normalize(c.n >= 0 ? normals[c.n] : smooth[c.v]);
         m.v.push_back({positions[c.v], normal, c.t >= 0 ? texCoords[c.t] : Vec2{}});
       }
       m.i.push_back(it->second);
