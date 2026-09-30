@@ -8,5 +8,6 @@ namespace mdEngine
   {
     Allocation vertexAllocation{};
     Allocation indexAllocation{};
+    GLint indexCount = 0;
   };
 } // mdEngine

@@ -26,7 +26,7 @@ void main() {
     if (uShadingMode == 2) {
         vec3 light = length(uLightDir) > 0.0 ? normalize(uLightDir) : vec3(0.0, 1.0, 0.0);
         vec3 n = normalize(vNormal);
-        float diffuse = max(dot(n, light), 0.0) + 0.3 * max(dot(n, -light), 0.0);
+        float diffuse = max(dot(n, light), 0.0) + 0.1 * max(dot(n, -light), 0.0);
         oFragColor = vec4(uColor * (uAmbient + (1.0 - uAmbient) * diffuse * uLightColor), 1.0);
         return;
     }

@@ -116,7 +116,7 @@ namespace mdEngine
       glUniform3f(this->uColorLocation, drawObj.color.x, drawObj.color.y, drawObj.color.z);
       glDrawElementsBaseVertex(
         GL_TRIANGLES,
-        mesh.indexAllocation.size,
+        mesh.indexCount,
         GL_UNSIGNED_INT,
         reinterpret_cast<const void*>(mesh.indexAllocation.offset * sizeof(uint32_t)),
         mesh.vertexAllocation.offset);
@@ -224,6 +224,7 @@ namespace mdEngine
     return MeshHandle{
       .vertexAllocation = vertexAllocation,
       .indexAllocation = indexAllocation,
+      .indexCount = indexCount
     };
   }
 

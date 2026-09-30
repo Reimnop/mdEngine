@@ -3,6 +3,8 @@
 #include <imgui.h>
 #include <iterator>
 
+#include "ObjLoader.h"
+
 namespace
 {
   constexpr float DEG_TO_RAD = 0.01745329252f;
@@ -11,6 +13,12 @@ namespace
     {0.90f, 0.35f, 0.30f}, {0.95f, 0.70f, 0.25f}, {0.45f, 0.80f, 0.40f},
     {0.30f, 0.70f, 0.90f}, {0.55f, 0.45f, 0.90f}, {0.90f, 0.45f, 0.75f}
   };
+
+  // ImGui strings are UTF-8, std::filesystem needs to be told
+  std::filesystem::path utf8Path(const std::string& s)
+  {
+    return std::filesystem::path(reinterpret_cast<const char8_t*>(s.c_str()));
+  }
 
   mdEngine::Mat4 getTransform(const Entity& e)
   {
@@ -29,9 +37,9 @@ Part1::Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr)
   for (auto i = 0; i < static_cast<int>(ShapeType::Count); i++)
   {
     auto mesh = makeShape(static_cast<ShapeType>(i));
-    meshes[i] = rendererPtr->createMesh(
+    meshes.push_back({SHAPE_NAMES[i], rendererPtr->createMesh(
       mesh.v.data(), static_cast<GLsizei>(mesh.v.size()),
-      mesh.i.data(), static_cast<GLsizei>(mesh.i.size()));
+      mesh.i.data(), static_cast<GLsizei>(mesh.i.size()))});
   }
 
   // one of each shape: 2D on the top row, 3D on the bottom row
@@ -39,7 +47,7 @@ Part1::Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr)
   for (auto i = 0; i < static_cast<int>(ShapeType::Count); i++)
   {
     const auto shape = static_cast<ShapeType>(i);
-    auto& e = addEntity(shape);
+    auto& e = addEntity(i);
     if (is3D(shape))
     {
       e.position = {(static_cast<float>(col3D++) - 3.5f) * 1.4f, -1.0f, 0.0f};
@@ -54,23 +62,51 @@ Part1::Part1(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr)
 
 Part1::~Part1()
 {
-  for (auto i = 0; i < static_cast<int>(ShapeType::Count); i++)
-    rendererPtr->deleteMesh(meshes[i]);
+  for (const auto& mesh : meshes)
+    rendererPtr->deleteMesh(mesh.handle);
 }
 
-Entity& Part1::addEntity(const ShapeType shape)
+Entity& Part1::addEntity(const size_t mesh)
 {
   newEntityCounter++;
 
   Entity e;
-  e.name = std::string(SHAPE_NAMES[static_cast<int>(shape)]) + " " + std::to_string(newEntityCounter);
-  e.shape = shape;
+  e.name = meshes[mesh].name + " " + std::to_string(newEntityCounter);
+  e.mesh = mesh;
   e.position = {0.0f, 0.0f, 0.0f};
   e.rotation = {0.0f, 0.0f, 0.0f};
   e.scale = {1.0f, 1.0f, 1.0f};
   e.color = PALETTE[newEntityCounter % std::size(PALETTE)];
   entities.push_back(e);
   return entities.back();
+}
+
+void Part1::importObj(const std::string& path)
+{
+  try
+  {
+    std::string trimmed = path;
+    if (trimmed.size() >= 2 && trimmed.front() == '"' && trimmed.back() == '"') // "Copy as path" on Windows
+      trimmed = trimmed.substr(1, trimmed.size() - 2);
+
+    const auto fsPath = utf8Path(trimmed);
+    auto mesh = loadObj(fsPath);
+
+    const auto stem = fsPath.stem().u8string();
+    meshes.push_back({std::string(stem.begin(), stem.end()), rendererPtr->createMesh(
+      mesh.v.data(), static_cast<GLsizei>(mesh.v.size()),
+      mesh.i.data(), static_cast<GLsizei>(mesh.i.size()))});
+
+    selectedNewMesh = meshes.size() - 1;
+    addEntity(selectedNewMesh);
+    selectedEntityIdx = entities.size() - 1;
+    importStatus = "Imported " + meshes.back().name + ": " + std::to_string(mesh.v.size()) + " vertices, "
+      + std::to_string(mesh.i.size() / 3) + " triangles";
+  }
+  catch (const std::exception& e)
+  {
+    importStatus = std::string("Import failed: ") + e.what();
+  }
 }
 
 void Part1::update()
@@ -84,7 +120,7 @@ void Part1::render()
   drawObjs.clear();
   for (const auto& e : entities)
     drawObjs.push_back({
-      .meshHandle = meshes[static_cast<int>(e.shape)],
+      .meshHandle = meshes[e.mesh].handle,
       .transform = getTransform(e),
       .color = e.color
     });
@@ -142,23 +178,33 @@ void Part1::renderGui()
 
   if (ImGui::Begin("Entities"))
   {
-    if (ImGui::BeginCombo("Shape", SHAPE_NAMES[static_cast<int>(selectedNewShape)]))
+    if (ImGui::BeginCombo("Shape", meshes[selectedNewMesh].name.c_str()))
     {
-      for (auto i = 0; i < static_cast<int>(ShapeType::Count); i++)
+      for (size_t i = 0; i < meshes.size(); i++)
       {
-        const bool isSelected = (selectedNewShape == static_cast<ShapeType>(i));
-        if (ImGui::Selectable(SHAPE_NAMES[i], isSelected))
-          selectedNewShape = static_cast<ShapeType>(i);
+        ImGui::PushID(static_cast<int>(i));
+        const bool isSelected = (selectedNewMesh == i);
+        if (ImGui::Selectable(meshes[i].name.c_str(), isSelected))
+          selectedNewMesh = i;
         if (isSelected)
           ImGui::SetItemDefaultFocus();
+        ImGui::PopID();
       }
       ImGui::EndCombo();
     }
 
     if (ImGui::Button("Add"))
     {
-      addEntity(selectedNewShape);
+      addEntity(selectedNewMesh);
     }
+
+    ImGui::Separator();
+    const bool enterPressed = ImGui::InputTextWithHint("OBJ path", "path/to/model.obj", objPath, sizeof(objPath), ImGuiInputTextFlags_EnterReturnsTrue);
+    if (ImGui::Button("Import OBJ") || enterPressed)
+      importObj(objPath);
+    if (!importStatus.empty())
+      ImGui::TextWrapped("%s", importStatus.c_str());
+    ImGui::Separator();
 
     if (ImGui::BeginListBox("##entities", ImVec2(-FLT_MIN, 200.0f)))
     {

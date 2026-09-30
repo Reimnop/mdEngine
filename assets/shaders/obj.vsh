@@ -24,7 +24,7 @@ void main() {
     if (uShadingMode == 1) {
         vec3 light = length(uLightDir) > 0.0 ? normalize(uLightDir) : vec3(0.0, 1.0, 0.0);
         vec3 n = normalize(vNormal);
-        float diffuse = max(dot(n, light), 0.0) + 0.3 * max(dot(n, -light), 0.0);
-        vGouroudColor = uColor * (uAmbient + (1.0 - uAmbient) * diffuse * uLightColor);
+        float diffuse = max(dot(n, light), 0.0) + 0.1 * max(dot(n, -light), 0.0);
+        vGouroudColor = uAmbient + (1.0 - uAmbient) * diffuse * uLightColor;
     }
 }

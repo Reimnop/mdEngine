@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <optional>
 #include <string>
 #include <vector>
@@ -11,10 +10,16 @@
 #include "core/Window.h"
 #include "core/rendering/Renderer.h"
 
+struct MeshAsset
+{
+  std::string name;
+  mdEngine::MeshHandle handle;
+};
+
 struct Entity
 {
   std::string name;
-  ShapeType shape = ShapeType::Cube;
+  size_t mesh = 0; // index into Part1::meshes
   mdEngine::Vec3 position{};
   mdEngine::Vec3 rotation{}; // degrees
   mdEngine::Vec3 scale{1.0f, 1.0f, 1.0f};
@@ -33,7 +38,8 @@ public:
   void render() override;
   void renderGui() override;
 private:
-  Entity& addEntity(ShapeType shape);
+  Entity& addEntity(size_t mesh);
+  void importObj(const std::string& path);
 
   mdEngine::Renderer* rendererPtr;
   mdEngine::TrackballCamera camera;
@@ -42,10 +48,13 @@ private:
   mdEngine::CameraObj cameraObj;
   mdEngine::LightingObj lightingObj;
 
-  std::array<mdEngine::MeshHandle, static_cast<int>(ShapeType::Count)> meshes;
+  std::vector<MeshAsset> meshes; // built-in shapes first (same order as ShapeType), then imported OBJs
   std::vector<Entity> entities;
-  ShapeType selectedNewShape = ShapeType::Triangle;
+  size_t selectedNewMesh = 0;
   std::optional<size_t> selectedEntityIdx;
 
   size_t newEntityCounter = 0;
+
+  char objPath[512] = "";
+  std::string importStatus;
 };
