@@ -39,8 +39,8 @@ namespace mdEngine
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
 
     // init shader
-    const auto vss = io::readFile("assets/shaders/obj.vsh");
-    const auto fss = io::readFile("assets/shaders/obj.fsh");
+    const auto vss = io::readFileAsString("assets/shaders/obj.vsh");
+    const auto fss = io::readFileAsString("assets/shaders/obj.fsh");
 
     const auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
     const auto vssPtr = vss.c_str();
@@ -58,6 +58,12 @@ namespace mdEngine
     glLinkProgram(this->program);
 
     this->uMvpLocation = glGetUniformLocation(this->program, "uMvp");
+    this->uModelLocation = glGetUniformLocation(this->program, "uModel");
+    this->uShadingModeLocation = glGetUniformLocation(this->program, "uShadingMode");
+    this->uColorLocation = glGetUniformLocation(this->program, "uColor");
+    this->uLightDirLocation = glGetUniformLocation(this->program, "uLightDir");
+    this->uLightColorLocation = glGetUniformLocation(this->program, "uLightColor");
+    this->uAmbientLocation = glGetUniformLocation(this->program, "uAmbient");
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
@@ -72,7 +78,7 @@ namespace mdEngine
     glDeleteProgram(this->program);
   }
 
-  GLuint Renderer::renderFrame(const DrawObj* drawObjs, const size_t drawObjCount, const CameraObj& cameraObj, const int width, const int height)
+  GLuint Renderer::renderFrame(const DrawObj* drawObjs, const size_t drawObjCount, const CameraObj& cameraObj, const LightingObj& lightingObj, const int width, const int height)
   {
     float aspect = static_cast<float>(width) / static_cast<float>(height);
     auto proj = Mat4::perspective(cameraObj.fov, aspect, 0.1f, 1000.0f);
@@ -90,6 +96,16 @@ namespace mdEngine
     glUseProgram(this->program);
     glBindVertexArray(this->vao);
 
+    glUniform3f(this->uLightDirLocation, lightingObj.direction.x, lightingObj.direction.y, lightingObj.direction.z);
+    glUniform3f(this->uLightColorLocation, lightingObj.color.x, lightingObj.color.y, lightingObj.color.z);
+    glUniform1f(this->uAmbientLocation, lightingObj.ambient);
+    glUniform1i(this->uShadingModeLocation, static_cast<GLint>(lightingObj.shadingMode));
+
+    if (lightingObj.fillMode == FillMode::Wireframe)
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     for (size_t i = 0; i < drawObjCount; i++)
     {
       const auto& drawObj = drawObjs[i];
@@ -97,6 +113,8 @@ namespace mdEngine
 
       auto mvp = proj * cameraObj.view * drawObj.transform;
       glUniformMatrix4fv(this->uMvpLocation, 1, GL_TRUE, mvp.m);
+      glUniformMatrix4fv(this->uModelLocation, 1, GL_TRUE, drawObj.transform.m);
+      glUniform3f(this->uColorLocation, drawObj.color.x, drawObj.color.y, drawObj.color.z);
       glDrawElementsBaseVertex(
         GL_TRIANGLES,
         mesh.indexCount,

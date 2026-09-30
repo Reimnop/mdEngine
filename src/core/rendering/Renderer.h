@@ -7,6 +7,7 @@
 #include "core/Window.h"
 #include "core/data/CameraObj.h"
 #include "core/data/DrawObj.h"
+#include "core/data/LightingObj.h"
 #include "core/data/Vertex.h"
 
 namespace mdEngine
@@ -17,7 +18,7 @@ namespace mdEngine
     Renderer();
     ~Renderer();
 
-    GLuint renderFrame(const DrawObj* drawObjs, size_t drawObjCount, const CameraObj& cameraObj, int width, int height);
+    GLuint renderFrame(const DrawObj* drawObjs, size_t drawObjCount, const CameraObj& cameraObj, const LightingObj& lightingObj, int width, int height);
 
     MeshHandle addMesh(Vertex* vertices, GLsizei vertexCount, uint32_t* indices, GLsizei indexCount);
     void clearMeshes();
@@ -33,6 +34,12 @@ namespace mdEngine
 
     GLuint program = 0;
     GLint uMvpLocation = 0;
+    GLint uModelLocation = 0;
+    GLint uShadingModeLocation = 0;
+    GLint uColorLocation = 0;
+    GLint uLightDirLocation = 0;
+    GLint uLightColorLocation = 0;
+    GLint uAmbientLocation = 0;
 
     GLuint fbo;
     GLuint colorTex, depthRbo;

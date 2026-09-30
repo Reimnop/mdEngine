@@ -6,7 +6,7 @@
 
 namespace mdEngine::io
 {
-  inline std::string readFile(const std::filesystem::path& path)
+  inline std::string readFileAsString(const std::filesystem::path& path)
   {
     std::ifstream file(path, std::ios::in | std::ios::binary);
     if (!file.is_open()) {
