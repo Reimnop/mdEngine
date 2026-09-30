@@ -105,8 +105,6 @@ namespace mdEngine
         mesh.baseVertex);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
     return this->colorTex;
   }
 

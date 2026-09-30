@@ -62,28 +62,27 @@ void Part1::render()
 
 void Part1::renderGui()
 {
+  auto& io = ImGui::GetIO();
+
   ImGui::DockSpaceOverViewport();
 
   ImGui::Begin("Camera");
-  ImGui::Text("Left drag: rotate | Right/middle drag: pan | Scroll: zoom");
+  ImGui::Text("Left: rotate | Right/middle: pan | Scroll: zoom");
   ImGui::Text("Distance: %.2f", camera.getDistance());
   if (ImGui::Button("Reset"))
-  {
     camera.reset();
-  }
-  ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
+
+  ImGui::Text("%.1f FPS", io.Framerate);
   ImGui::End();
 
   // draw imgui viewport window
   if (ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
   {
     if (ImGui::IsWindowFocused())
-    {
-      camera.update(ImGui::GetIO());
-    }
+      camera.update(io);
 
-    ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-    auto colorTex = rendererPtr->renderFrame(drawObjs.data(), drawObjs.size(), cameraObj, viewportSize.x, viewportSize.y);
+    const auto viewportSize = ImGui::GetContentRegionAvail();
+    const auto colorTex = rendererPtr->renderFrame(drawObjs.data(), drawObjs.size(), cameraObj, viewportSize.x, viewportSize.y);
 
     ImGui::Image(colorTex, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
   }

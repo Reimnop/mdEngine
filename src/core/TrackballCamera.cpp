@@ -102,7 +102,6 @@ namespace mdEngine
 
     float x = io.MousePos.x, y = io.MousePos.y;
 
-    // Starting (or switching) a drag only records the cursor position.
     const bool started = mode != dragMode;
     dragMode = mode;
     const double prevX = lastX, prevY = lastY;
@@ -142,15 +141,11 @@ namespace mdEngine
 
   void TrackballCamera::panBy(const double dx, const double dy, const int h)
   {
-    // World units covered by one pixel at the target's depth.
     const float unitsPerPixel = 2.0f * distance * std::tan(fov * 0.5f) / static_cast<float>(h);
 
-    // Cursor delta in view space (screen right / screen up).
     const float vx = static_cast<float>(dx) * unitsPerPixel;
     const float vy = -static_cast<float>(dy) * unitsPerPixel;
 
-    // Rotate into world space (multiply by the transpose of the rotation) and move the
-    // target the opposite way so the scene follows the cursor.
     const float* m = rotation.m;
     target.x -= vx * m[0] + vy * m[4];
     target.y -= vx * m[1] + vy * m[5];
@@ -162,7 +157,6 @@ namespace mdEngine
     const float scroll = io.MouseWheel;
     if (scroll == 0.0f) return;
 
-    // Exponential zoom feels uniform at any distance; scrolling up zooms in.
     setDistance(distance * std::exp(-scroll * zoomSpeed));
   }
 } // mdEngine
