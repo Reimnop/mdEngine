@@ -97,13 +97,21 @@ public:
 
   void update(float deltaTime);
   void render(const mdEngine::Mat4& transform, std::vector<mdEngine::DrawObj>& drawObjs) const;
+
+  void setAtomScale(float scale);
+  void setBondThickness(float thickness);
 private:
+  void rebuildConnectionTransforms();
+
   mdEngine::Renderer* rendererPtr;
   Part2MeshLibrary* meshLibraryPtr;
 
   std::vector<Molecule::Atom> atoms;
   std::vector<Molecule::Connection> connections;
   std::vector<mdEngine::Mat4> connectionTransforms;
+
+  float atomScale = 1.0f;
+  float bondThickness = 0.2f; // diameter
 };
 
 class Part2 : public SceneBase
@@ -117,11 +125,27 @@ public:
 protected:
   void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj) override;
 private:
+  void selectElement(size_t index);
+  void selectMolecule(size_t index);
+
   Part2MeshLibrary meshLibrary;
 
-  std::vector<Element> elements;
-  std::vector<Molecule> molecules;
+  std::vector<Element> elements; // sorted by atomic number
+  std::vector<Molecule> molecules; // sorted by name
 
   std::unique_ptr<MoleculeInstance> moleculeInstance;
   std::unique_ptr<ElementInstance> elementInstance;
+
+  size_t elementIdx = 0;
+  size_t moleculeIdx = 0;
+
+  bool electronsPaused = false;
+  float electronSpeed = 20.0f; // degrees per second
+  float atomTilt = 60.0f; // degrees, 90 = shells face the camera
+
+  float atomScale = 1.0f;
+  float bondThickness = 0.2f;
+  bool moleculeSpin = false;
+  float moleculeSpinSpeed = 30.0f; // degrees per second
+  float moleculeAngle = 0.0f; // radians
 };
