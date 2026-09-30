@@ -11,5 +11,6 @@ namespace mdEngine
     MeshHandle meshHandle{};
     Mat4 transform{};
     Vec3 color{0.8f, 0.8f, 0.8f};
+    float shininess = 32.0f;
   };
 } // mdEngine

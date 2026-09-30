@@ -24,6 +24,7 @@ struct Entity
   mdEngine::Vec3 rotation{}; // degrees
   mdEngine::Vec3 scale{1.0f, 1.0f, 1.0f};
   mdEngine::Vec3 color{0.8f, 0.8f, 0.8f};
+  float shininess = 32.0f;
 };
 
 constexpr const char* FILL_MODE_NAMES[static_cast<int>(mdEngine::FillMode::Count)] = {"Solid", "Wireframe"};

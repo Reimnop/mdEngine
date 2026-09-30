@@ -41,8 +41,11 @@ namespace mdEngine
     GLuint program = 0;
     GLint uMvpLocation = 0;
     GLint uModelLocation = 0;
+    GLint uViewLocation = 0;
     GLint uShadingModeLocation = 0;
     GLint uColorLocation = 0;
+    GLint uShininessLocation = 0;
+    GLint uSpecularStrengthLocation = 0;
     GLint uLightDirLocation = 0;
     GLint uLightColorLocation = 0;
     GLint uAmbientLocation = 0;

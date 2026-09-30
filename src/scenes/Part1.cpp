@@ -122,7 +122,8 @@ void Part1::render()
     drawObjs.push_back({
       .meshHandle = meshes[e.mesh].handle,
       .transform = getTransform(e),
-      .color = e.color
+      .color = e.color,
+      .shininess = e.shininess
     });
 }
 
@@ -173,6 +174,7 @@ void Part1::renderGui()
     ImGui::DragFloat3("Direction", &lightingObj.direction.x, 0.01f);
     ImGui::ColorEdit3("Color", &lightingObj.color.x);
     ImGui::DragFloat("Ambient", &lightingObj.ambient, 0.01f, 0.0f, 1.0f);
+    ImGui::DragFloat("Specular Strength", &lightingObj.specularStrength, 0.01f, 0.0f, 1.0f);
   }
   ImGui::End();
 
@@ -228,6 +230,7 @@ void Part1::renderGui()
       ImGui::DragFloat3("Rotation", &e.rotation.x, 1.0f);
       ImGui::DragFloat3("Scale", &e.scale.x, 0.05f, 0.01f, 100.0f);
       ImGui::ColorEdit3("Color", &e.color.x);
+      ImGui::DragFloat("Shininess", &e.shininess, 1.0f, 1.0f, 256.0f);
 
       if (ImGui::Button("Delete"))
       {

@@ -59,8 +59,11 @@ namespace mdEngine
 
     this->uMvpLocation = glGetUniformLocation(this->program, "uMvp");
     this->uModelLocation = glGetUniformLocation(this->program, "uModel");
+    this->uViewLocation = glGetUniformLocation(this->program, "uView");
     this->uShadingModeLocation = glGetUniformLocation(this->program, "uShadingMode");
     this->uColorLocation = glGetUniformLocation(this->program, "uColor");
+    this->uShininessLocation = glGetUniformLocation(this->program, "uShininess");
+    this->uSpecularStrengthLocation = glGetUniformLocation(this->program, "uSpecularStrength");
     this->uLightDirLocation = glGetUniformLocation(this->program, "uLightDir");
     this->uLightColorLocation = glGetUniformLocation(this->program, "uLightColor");
     this->uAmbientLocation = glGetUniformLocation(this->program, "uAmbient");
@@ -102,6 +105,7 @@ namespace mdEngine
     glUniform3f(this->uLightColorLocation, lightingObj.color.x, lightingObj.color.y, lightingObj.color.z);
     glUniform1f(this->uAmbientLocation, lightingObj.ambient);
     glUniform1i(this->uShadingModeLocation, static_cast<GLint>(lightingObj.shadingMode));
+    glUniform1f(this->uSpecularStrengthLocation, lightingObj.specularStrength);
 
     glPolygonMode(GL_FRONT_AND_BACK, lightingObj.fillMode == FillMode::Wireframe ? GL_LINE : GL_FILL);
 
@@ -112,14 +116,16 @@ namespace mdEngine
 
       auto mvp = proj * cameraObj.view * drawObj.transform;
       glUniformMatrix4fv(this->uMvpLocation, 1, GL_TRUE, mvp.m);
+      glUniformMatrix4fv(this->uViewLocation, 1, GL_TRUE, cameraObj.view.m);
       glUniformMatrix4fv(this->uModelLocation, 1, GL_TRUE, drawObj.transform.m);
       glUniform3f(this->uColorLocation, drawObj.color.x, drawObj.color.y, drawObj.color.z);
+      glUniform1f(this->uShininessLocation, drawObj.shininess);
       glDrawElementsBaseVertex(
         GL_TRIANGLES,
         mesh.indexCount,
         GL_UNSIGNED_INT,
         reinterpret_cast<const void*>(mesh.indexAllocation.offset * sizeof(uint32_t)),
-        mesh.vertexAllocation.offset);
+        static_cast<GLint>(mesh.vertexAllocation.offset));
     }
 
     return this->colorTex;
