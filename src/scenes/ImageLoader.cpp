@@ -1,22 +1,17 @@
 #include "ImageLoader.h"
 
+#include <fstream>
 #include <stb_image.h>
 #include <stdexcept>
 #include <string>
 
-#include "helper/io.h"
-
 ImageData loadImage(const std::filesystem::path& path)
 {
-  std::string bytes;
-  try
-  {
-    bytes = mdEngine::io::readFileAsString(path); // reads through std::filesystem, so unicode paths work
-  }
-  catch (const std::exception&)
-  {
-    throw std::runtime_error("failed to open " + path.filename().string());
-  }
+  std::ifstream file(path, std::ios::in | std::ios::binary);
+  if (!file.is_open())
+    throw std::runtime_error("failed to open file: " + path.filename().string());
+
+  const auto bytes = std::vector(std::istreambuf_iterator(file), std::istreambuf_iterator<char>());
 
   stbi_set_flip_vertically_on_load(1);
 
