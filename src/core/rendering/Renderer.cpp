@@ -26,17 +26,26 @@ namespace mdEngine
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glGenTextures(1, &colorTex);
-    glBindTexture(GL_TEXTURE_2D, colorTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTex, 0);
+    glGenRenderbuffers(1, &colorRboMsaa);
+    glBindRenderbuffer(GL_RENDERBUFFER, colorRboMsaa);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGBA16F, fboWidth, fboHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRboMsaa);
 
     glGenRenderbuffers(1, &depthRbo);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
+
+    // setup target fbo
+    glGenFramebuffers(1, &targetFbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, targetFbo);
+
+    glGenTextures(1, &targetTex);
+    glBindTexture(GL_TEXTURE_2D, targetTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targetTex, 0);
 
     // init shader
     const auto vss = io::readFileAsString("assets/shaders/obj.vsh");
@@ -79,8 +88,10 @@ namespace mdEngine
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ebo);
     glDeleteFramebuffers(1, &fbo);
-    glDeleteTextures(1, &colorTex);
+    glDeleteRenderbuffers(1, &colorRboMsaa);
     glDeleteRenderbuffers(1, &depthRbo);
+    glDeleteFramebuffers(1, &targetFbo);
+    glDeleteTextures(1, &targetTex);
     glDeleteProgram(this->program);
   }
 
@@ -94,9 +105,11 @@ namespace mdEngine
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
+    glClearColor(lightingObj.clearColor.x, lightingObj.clearColor.y, lightingObj.clearColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, width, height);
 
+    glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
 
     if (lightingObj.fillMode == FillMode::Wireframe)
@@ -139,7 +152,18 @@ namespace mdEngine
         static_cast<GLint>(mesh.vertexAllocation.offset));
     }
 
-    return this->colorTex;
+    // resolve MSAA to target FBO
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, targetFbo);
+    glBlitFramebuffer(
+      0, 0,
+      width, height,
+      0, 0,
+      width, height,
+      GL_COLOR_BUFFER_BIT,
+      GL_NEAREST);
+
+    return this->targetTex;
   }
 
   void Renderer::handleMeshUpdates()
@@ -198,22 +222,30 @@ namespace mdEngine
     this->fboHeight = height;
 
     // delete, create new
-    glDeleteTextures(1, &colorTex);
+    glDeleteRenderbuffers(1, &colorRboMsaa);
     glDeleteRenderbuffers(1, &depthRbo);
+    glDeleteTextures(1, &targetTex);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glGenTextures(1, &colorTex);
-    glBindTexture(GL_TEXTURE_2D, colorTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTex, 0);
+    glGenRenderbuffers(1, &colorRboMsaa);
+    glBindRenderbuffer(GL_RENDERBUFFER, colorRboMsaa);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGBA16F, fboWidth, fboHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRboMsaa);
 
     glGenRenderbuffers(1, &depthRbo);
     glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight);
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, targetFbo);
+
+    glGenTextures(1, &targetTex);
+    glBindTexture(GL_TEXTURE_2D, targetTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targetTex, 0);
   }
 
   MeshHandle Renderer::createMesh(const Vertex* vertices, const GLsizei vertexCount, const uint32_t* indices, const GLsizei indexCount)
@@ -251,7 +283,7 @@ namespace mdEngine
     indexBufferAllocator.free(meshHandle.indexAllocation);
   }
 
-  TextureHandle Renderer::createTexture(GLsizei width, GLsizei height, const void* data)
+  TextureHandle Renderer::createTexture(const GLsizei width, const GLsizei height, const void* data)
   {
     GLuint texHandle;
     glGenTextures(1, &texHandle);
@@ -263,7 +295,7 @@ namespace mdEngine
     return TextureHandle{.handle = texHandle};
   }
 
-  void Renderer::deleteTexture(TextureHandle textureHandle)
+  void Renderer::deleteTexture(const TextureHandle textureHandle)
   {
     glDeleteTextures(1, &textureHandle.handle);
   }

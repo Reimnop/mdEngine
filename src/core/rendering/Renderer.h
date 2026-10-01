@@ -44,8 +44,8 @@ namespace mdEngine
     GLint uAmbientLocation = 0;
     GLint uUseTextureLocation = 0;
 
-    GLuint fbo = 0;
-    GLuint colorTex = 0, depthRbo = 0;
+    GLuint fbo = 0, targetFbo = 0;
+    GLuint colorRboMsaa = 0, depthRbo = 0, targetTex = 0;
     int fboWidth = 1280, fboHeight = 720;
 
     GLuint vao = 0, vbo = 0, ebo = 0;
