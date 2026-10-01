@@ -8,6 +8,11 @@
 
 namespace mdEngine
 {
+  constexpr const char* SCENE_NAMES[] = {
+    "Part 1 (Drawing Basic Shapes)",
+    "Part 2 (Visualization of Atoms and Molecules)"
+  };
+
   class Orchestrator
   {
   public:
@@ -21,5 +26,9 @@ namespace mdEngine
     ImGuiLayer imgui;
 
     std::unique_ptr<Scene> currentScene;
+
+    size_t currentSceneIdx = 0;
+
+    void renderSceneSwitcher();
   };
 } // mdEngine

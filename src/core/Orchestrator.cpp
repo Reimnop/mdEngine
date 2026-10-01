@@ -9,7 +9,7 @@ namespace mdEngine
     window(Window()),
     renderer(),
     imgui(&window),
-    currentScene(std::make_unique<Part2>(&renderer, &window))
+    currentScene(std::make_unique<Part1>(&renderer, &window))
   {
   }
 
@@ -32,6 +32,8 @@ namespace mdEngine
       currentScene->update(static_cast<float>(deltaTime));
       currentScene->renderGui();
 
+      renderSceneSwitcher();
+
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       glClear(GL_COLOR_BUFFER_BIT);
 
@@ -39,5 +41,40 @@ namespace mdEngine
 
       window.swapBuffers();
     }
+  }
+
+  void Orchestrator::renderSceneSwitcher()
+  {
+    if (ImGui::Begin("Scene switcher"))
+    {
+      if (ImGui::BeginCombo("Scene", SCENE_NAMES[currentSceneIdx]))
+      {
+        for (size_t i = 0; i < std::size(SCENE_NAMES); i++)
+        {
+          ImGui::PushID(static_cast<int>(i));
+          const bool isSelected = (currentSceneIdx == i);
+          if (ImGui::Selectable(SCENE_NAMES[i], isSelected))
+          {
+            currentSceneIdx = i;
+            switch (currentSceneIdx)
+            {
+              case 0:
+                currentScene = std::make_unique<Part1>(&renderer, &window);
+                break;
+              case 1:
+                currentScene = std::make_unique<Part2>(&renderer, &window);
+                break;
+              default:
+                break;
+            }
+          }
+          if (isSelected)
+            ImGui::SetItemDefaultFocus();
+          ImGui::PopID();
+        }
+        ImGui::EndCombo();
+      }
+    }
+    ImGui::End();
   }
 } // mdEngine
