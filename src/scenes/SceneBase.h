@@ -3,7 +3,8 @@
 #include <vector>
 
 #include "core/Scene.h"
-#include "core/TrackballCamera.h"
+#include "core/OrbitCamera.h"
+#include "core/Window.h"
 #include "core/data/CameraObj.h"
 #include "core/data/DrawObj.h"
 #include "core/data/LightingObj.h"
@@ -20,7 +21,7 @@ public:
   void renderGui() override;
 protected:
   mdEngine::Renderer* rendererPtr;
-  mdEngine::TrackballCamera camera;
+  mdEngine::OrbitCamera camera;
 
   virtual void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj) = 0;
 private:

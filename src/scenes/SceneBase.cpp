@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 
-SceneBase::SceneBase(mdEngine::Renderer* rendererPtr, mdEngine::Window* windowPtr): rendererPtr(rendererPtr), camera(windowPtr, 15.0f)
+SceneBase::SceneBase(mdEngine::Renderer* rendererPtr, mdEngine::Window*): rendererPtr(rendererPtr), camera(15.0f)
 {
 }
 
@@ -15,7 +15,9 @@ void SceneBase::renderGui()
   if (ImGui::Begin("Stats"))
   {
     ImGui::Text("%.1f FPS", io.Framerate);
-    ImGui::Text("Left: rotate | Right/middle: pan | Scroll: zoom");
+    ImGui::Text("Orbit: middle mouse (or Alt + left)");
+    ImGui::Text("Pan: Shift + middle | Zoom: scroll");
+    ImGui::Text("Views: numpad 1/3/7 (Ctrl: opposite)");
     ImGui::Text("Distance: %.2f", camera.getDistance());
     if (ImGui::Button("Reset"))
       camera.reset();
@@ -58,10 +60,12 @@ void SceneBase::renderGui()
 
   if (ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
   {
-    if (ImGui::IsWindowFocused())
-      camera.update(io);
-
     const auto viewportSize = ImGui::GetContentRegionAvail();
+
+    const auto imagePos = ImGui::GetCursorScreenPos();
+    const bool hovered = ImGui::IsWindowHovered()
+      && ImGui::IsMouseHoveringRect(imagePos, ImVec2(imagePos.x + viewportSize.x, imagePos.y + viewportSize.y));
+    camera.update(io, hovered, viewportSize.y);
 
     drawObjs.clear();
     render(drawObjs, cameraObj, lightingObj);
