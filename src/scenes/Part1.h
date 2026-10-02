@@ -45,7 +45,7 @@ public:
   void update(float deltaTime) override;
   void renderGui() override;
 protected:
-  void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj) override;
+  void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj, mdEngine::PostProcessingObj& postProcessingObj) override;
 private:
   Entity& addEntity(size_t mesh);
   void importObj(const std::string& path);

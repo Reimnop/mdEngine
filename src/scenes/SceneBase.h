@@ -24,11 +24,12 @@ protected:
   mdEngine::Renderer* rendererPtr;
   mdEngine::OrbitCamera camera;
 
-  virtual void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj);
+  virtual void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj, mdEngine::PostProcessingObj& postProcessingObj);
 private:
   std::vector<mdEngine::DrawObj> drawObjs;
   mdEngine::CameraObj cameraObj;
   mdEngine::LightingObj lightingObj;
+  mdEngine::PostProcessingObj postProcessingObj;
   Grid grid;
 
   bool gridEnabled = false;

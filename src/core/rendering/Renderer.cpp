@@ -101,7 +101,12 @@ namespace mdEngine
     glDeleteProgram(this->program);
   }
 
-  GLuint Renderer::renderFrame(const DrawObj* drawObjs, const size_t drawObjCount, const CameraObj& cameraObj, const LightingObj& lightingObj, const int width, const int height)
+  GLuint Renderer::renderFrame(
+    const DrawObj* drawObjs, const size_t drawObjCount,
+    const CameraObj& cameraObj,
+    const LightingObj& lightingObj,
+    const PostProcessingObj& postProcessingObj,
+    const int width, const int height)
   {
     float aspect = static_cast<float>(width) / static_cast<float>(height);
     auto proj = Mat4::perspective(cameraObj.fov, aspect, 0.1f, 1000.0f);
@@ -134,7 +139,7 @@ namespace mdEngine
 
     glUniform3f(this->uLightDirLocation, lightingObj.direction.x, lightingObj.direction.y, lightingObj.direction.z);
 
-    const auto lightColorLinear = lightingObj.color.toLinear();
+    const auto lightColorLinear = lightingObj.color.toLinear() * lightingObj.intensity;
     const auto ambientLinear = ch::toLinear(lightingObj.ambient);
 
     glUniform3f(this->uLightColorLocation, lightColorLinear.r, lightColorLinear.g, lightColorLinear.b);
@@ -191,6 +196,9 @@ namespace mdEngine
     glDisable(GL_CULL_FACE);
     glDisable(GL_MULTISAMPLE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    if (postProcessingObj.useTonemapping && acesPostProcessor.process(postProcessingTex1, postProcessingTex2, width, height, postProcessingObj.exposure))
+      std::swap(postProcessingTex1, postProcessingTex2);
 
     if (compositePostProcessor.process(postProcessingTex1, postProcessingTex2, width, height))
       std::swap(postProcessingTex1, postProcessingTex2);

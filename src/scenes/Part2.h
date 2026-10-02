@@ -123,7 +123,7 @@ public:
   void update(float deltaTime) override;
   void renderGui() override;
 protected:
-  void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj) override;
+  void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj, mdEngine::PostProcessingObj& postProcessingObj) override;
 private:
   void selectElement(size_t index);
   void selectMolecule(size_t index);

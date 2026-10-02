@@ -10,7 +10,7 @@ namespace mdEngine
     Composite();
     ~Composite() override;
 
-    bool process(GLuint inputTexture, GLuint outputTexture, GLsizei width, GLsizei height) override;
+    bool process(GLuint inputTexture, GLuint outputTexture, GLsizei width, GLsizei height);
   private:
     GLuint program = 0;
   };

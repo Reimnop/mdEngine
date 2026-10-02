@@ -11,8 +11,6 @@ namespace mdEngine
   public:
     PostProcessor();
     virtual ~PostProcessor();
-
-    virtual bool process(GLuint inputTexture, GLuint outputTexture, GLsizei width, GLsizei height) = 0;
   protected:
     GLuint vao = 0, fbo = 0;
 

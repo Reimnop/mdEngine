@@ -8,8 +8,10 @@
 #include "core/data/CameraObj.h"
 #include "core/data/DrawObj.h"
 #include "core/data/LightingObj.h"
+#include "core/data/PostProcessingObj.h"
 #include "core/data/Vertex.h"
 #include "core/memory/PooledSuballocator.h"
+#include "post_processing/Aces.h"
 #include "post_processing/Composite.h"
 
 namespace mdEngine
@@ -23,7 +25,12 @@ namespace mdEngine
     Renderer(const Renderer&) = delete;
     Renderer& operator=(const Renderer&) = delete;
 
-    GLuint renderFrame(const DrawObj* drawObjs, size_t drawObjCount, const CameraObj& cameraObj, const LightingObj& lightingObj, int width, int height);
+    GLuint renderFrame(
+      const DrawObj* drawObjs, size_t drawObjCount,
+      const CameraObj& cameraObj,
+      const LightingObj& lightingObj,
+      const PostProcessingObj& postProcessingObj,
+      int width, int height);
 
     MeshHandle createMesh(const Vertex* vertices, GLsizei vertexCount, const uint32_t* indices, GLsizei indexCount);
     void deleteMesh(MeshHandle meshHandle);
@@ -59,6 +66,7 @@ namespace mdEngine
 
     // post processors
     Composite compositePostProcessor{};
+    Aces acesPostProcessor{};
 
     bool meshesDirty = true;
 

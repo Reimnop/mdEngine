@@ -57,7 +57,16 @@ void SceneBase::renderGui()
 
     ImGui::DragFloat3("Direction", &lightingObj.direction.x, 0.01f);
     ImGui::ColorEdit3("Color", &lightingObj.color.r);
+    ImGui::ColorEdit3("Clear Color", &lightingObj.clearColor.r);
+    ImGui::DragFloat("Intensity", &lightingObj.intensity, 0.01f, 0.1f, 10.0f);
     ImGui::DragFloat("Ambient", &lightingObj.ambient, 0.01f, 0.0f, 1.0f);
+  }
+  ImGui::End();
+
+  if (ImGui::Begin("Post Processing"))
+  {
+    ImGui::Checkbox("Use Tonemapping", &postProcessingObj.useTonemapping);
+    ImGui::DragFloat("Exposure", &postProcessingObj.exposure, 0.01f, 0.1f, 10.0f);
   }
   ImGui::End();
 
@@ -71,13 +80,14 @@ void SceneBase::renderGui()
     camera.update(io, hovered, viewportSize.y);
 
     drawObjs.clear();
-    render(drawObjs, cameraObj, lightingObj);
+    render(drawObjs, cameraObj, lightingObj, postProcessingObj);
 
     const auto colorTex = rendererPtr->renderFrame(
       drawObjs.data(),
       drawObjs.size(),
       cameraObj,
       lightingObj,
+      postProcessingObj,
       viewportSize.x,
       viewportSize.y);
 
@@ -86,7 +96,8 @@ void SceneBase::renderGui()
   ImGui::End();
 }
 
-void SceneBase::render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj&, mdEngine::LightingObj&)
+void SceneBase::render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj&, mdEngine::LightingObj&, mdEngine::PostProcessingObj&)
 {
-  if (gridEnabled) grid.render(drawObjs);
+  if (gridEnabled)
+    grid.render(drawObjs);
 }
