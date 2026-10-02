@@ -15,5 +15,6 @@ namespace mdEngine
     GLuint vao = 0, fbo = 0;
 
     static GLuint createVertexShader();
+    static GLuint createProgram(const char* fragmentShaderPath);
   };
 } // mdEngine

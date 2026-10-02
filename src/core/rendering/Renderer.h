@@ -12,6 +12,7 @@
 #include "core/data/Vertex.h"
 #include "core/memory/PooledSuballocator.h"
 #include "post_processing/Aces.h"
+#include "post_processing/Bloom.h"
 #include "post_processing/Composite.h"
 
 namespace mdEngine
@@ -67,6 +68,7 @@ namespace mdEngine
     // post processors
     Composite compositePostProcessor{};
     Aces acesPostProcessor{};
+    Bloom bloomPostProcessor{};
 
     bool meshesDirty = true;
 

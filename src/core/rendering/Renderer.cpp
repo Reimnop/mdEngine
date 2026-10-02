@@ -197,6 +197,13 @@ namespace mdEngine
     glDisable(GL_MULTISAMPLE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    // bloom runs on linear HDR, so it goes before tonemapping
+    if (postProcessingObj.useBloom && bloomPostProcessor.process(
+      postProcessingTex1, postProcessingTex2, width, height,
+      postProcessingObj.bloomIntensity, postProcessingObj.bloomDiffusion,
+      postProcessingObj.bloomThreshold, postProcessingObj.bloomKnee, postProcessingObj.bloomColor))
+      std::swap(postProcessingTex1, postProcessingTex2);
+
     if (postProcessingObj.useTonemapping && acesPostProcessor.process(postProcessingTex1, postProcessingTex2, width, height, postProcessingObj.exposure))
       std::swap(postProcessingTex1, postProcessingTex2);
 

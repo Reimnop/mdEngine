@@ -10,6 +10,9 @@ namespace mdEngine
     Composite();
     ~Composite() override;
 
+    Composite(const Composite&) = delete;
+    Composite& operator=(const Composite&) = delete;
+
     bool process(GLuint inputTexture, GLuint outputTexture, GLsizei width, GLsizei height);
   private:
     GLuint program = 0;

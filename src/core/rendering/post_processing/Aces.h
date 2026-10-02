@@ -10,6 +10,9 @@ namespace mdEngine
     Aces();
     ~Aces() override;
 
+    Aces(const Aces&) = delete;
+    Aces& operator=(const Aces&) = delete;
+
     bool process(GLuint inputTexture, GLuint outputTexture, GLsizei width, GLsizei height, float exposure);
   private:
     GLuint program = 0;

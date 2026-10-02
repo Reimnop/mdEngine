@@ -65,6 +65,16 @@ void SceneBase::renderGui()
 
   if (ImGui::Begin("Post Processing"))
   {
+    ImGui::Checkbox("Use Bloom", &postProcessingObj.useBloom);
+    if (postProcessingObj.useBloom)
+    {
+      ImGui::DragFloat("Bloom Intensity", &postProcessingObj.bloomIntensity, 0.01f, 0.0f, 10.0f);
+      ImGui::DragFloat("Bloom Diffusion", &postProcessingObj.bloomDiffusion, 0.05f, 1.0f, 10.0f);
+      ImGui::DragFloat("Bloom Threshold", &postProcessingObj.bloomThreshold, 0.01f, 0.0f, 10.0f);
+      ImGui::DragFloat("Bloom Knee", &postProcessingObj.bloomKnee, 0.01f, 0.0f, 1.0f);
+      ImGui::ColorEdit3("Bloom Color", &postProcessingObj.bloomColor.r);
+    }
+
     ImGui::Checkbox("Use Tonemapping", &postProcessingObj.useTonemapping);
     ImGui::DragFloat("Exposure", &postProcessingObj.exposure, 0.01f, 0.1f, 10.0f);
   }
