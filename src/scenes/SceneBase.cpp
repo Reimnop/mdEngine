@@ -19,8 +19,11 @@ void SceneBase::renderGui()
     ImGui::Text("Pan: Shift + middle | Zoom: scroll");
     ImGui::Text("Views: numpad 1/3/7 (Ctrl: opposite)");
     ImGui::Text("Distance: %.2f", camera.getDistance());
+
     if (ImGui::Button("Reset"))
       camera.reset();
+
+    ImGui::Checkbox("Grid", &gridEnabled);
   }
   ImGui::End();
 
@@ -85,5 +88,5 @@ void SceneBase::renderGui()
 
 void SceneBase::render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj&, mdEngine::LightingObj&)
 {
-  grid.render(drawObjs);
+  if (gridEnabled) grid.render(drawObjs);
 }

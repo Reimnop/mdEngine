@@ -30,4 +30,6 @@ private:
   mdEngine::CameraObj cameraObj;
   mdEngine::LightingObj lightingObj;
   Grid grid;
+
+  bool gridEnabled = false;
 };
