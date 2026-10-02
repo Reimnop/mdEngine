@@ -26,7 +26,7 @@ void SceneBase::renderGui()
   {
     if (ImGui::BeginCombo("Fill Mode", FILL_MODE_NAMES[static_cast<int>(lightingObj.fillMode)]))
     {
-      for (auto i = 0; i < static_cast<int>(mdEngine::FillMode::Count); i++)
+      for (auto i = 0; i < 2; i++)
       {
         const bool isSelected = (lightingObj.fillMode == static_cast<mdEngine::FillMode>(i));
         if (ImGui::Selectable(FILL_MODE_NAMES[i], isSelected))
@@ -39,7 +39,7 @@ void SceneBase::renderGui()
 
     if (ImGui::BeginCombo("Shading Mode", SHADING_MODE_NAMES[static_cast<int>(lightingObj.shadingMode)]))
     {
-      for (auto i = 0; i < static_cast<int>(mdEngine::ShadingMode::Count); i++)
+      for (auto i = 1; i < 4; i++)
       {
         const bool isSelected = (lightingObj.shadingMode == static_cast<mdEngine::ShadingMode>(i));
         if (ImGui::Selectable(SHADING_MODE_NAMES[i], isSelected))
@@ -53,7 +53,6 @@ void SceneBase::renderGui()
     ImGui::DragFloat3("Direction", &lightingObj.direction.x, 0.01f);
     ImGui::ColorEdit3("Color", &lightingObj.color.r);
     ImGui::DragFloat("Ambient", &lightingObj.ambient, 0.01f, 0.0f, 1.0f);
-    ImGui::DragFloat("Specular Strength", &lightingObj.specularStrength, 0.01f, 0.0f, 1.0f);
   }
   ImGui::End();
 

@@ -8,16 +8,15 @@ namespace mdEngine
   enum class FillMode
   {
     Solid = 0,
-    Wireframe = 1,
-    Count
+    Wireframe = 1
   };
 
   enum class ShadingMode
   {
-    Flat = 0,
-    Gouraud = 1,
-    Phong = 2,
-    Count
+    Inherit = 0,
+    Flat = 1,
+    Gouraud = 2,
+    Phong = 3
   };
 
   struct LightingObj
@@ -28,6 +27,5 @@ namespace mdEngine
     Color3f color{1.0f, 1.0f, 1.0f};
     Color3f clearColor{0.0f, 0.0f, 0.0f};
     float ambient = 0.3f;
-    float specularStrength = 0.5f;
   };
 } // mdEngine

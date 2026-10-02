@@ -3,10 +3,12 @@
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoord;
+layout(location = 3) in vec3 aColor;
 
 out vec3 vNormal;
 out vec2 vTexCoord;
 out vec3 vFragPos;
+out vec3 vVertexColor;
 out vec3 vGouroudColor;
 
 uniform mat4 uMvp;
@@ -24,6 +26,7 @@ void main() {
     vNormal = transpose(inverse(mat3(uModel))) * aNormal;
     vTexCoord = aTexCoord;
     vFragPos = (uView * uModel * vec4(aPos, 1.0)).xyz;
+    vVertexColor = aColor;
     gl_Position = uMvp * vec4(aPos, 1.0);
 
     if (uShadingMode == 1) {
@@ -33,6 +36,6 @@ void main() {
         vec3 viewDir = normalize(-vFragPos);
         vec3 reflectDir = reflect(transpose(inverse(mat3(uView))) * -light, transpose(inverse(mat3(uView))) * n);
         vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0), uShininess) * uLightColor;
-        vGouroudColor = (diffuse + specular * uSpecularStrength + vec3(uAmbient)) * uColor;
+        vGouroudColor = (diffuse + specular * uSpecularStrength + vec3(uAmbient)) * uColor * aColor;
     }
 }

@@ -30,7 +30,9 @@ struct Entity
   mdEngine::Vec3 rotation{}; // degrees
   mdEngine::Vec3 scale{1.0f, 1.0f, 1.0f};
   mdEngine::Color3f color{0.8f, 0.8f, 0.8f};
+  mdEngine::ShadingMode shadingMode = mdEngine::ShadingMode::Inherit;
   float shininess = 32.0f;
+  float specularStrength = 0.5f;
   std::optional<size_t> texture; // index into Part1::textures
 };
 

@@ -166,7 +166,9 @@ void Part1::render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj
       .meshHandle = meshes[e.mesh].handle,
       .transform = getTransform(e),
       .color = e.color,
-      .shininess = e.shininess
+      .shadingMode = e.shadingMode,
+      .shininess = e.shininess,
+      .specularStrength = e.specularStrength
     };
     if (e.texture.has_value())
       obj.texture = textures[e.texture.value()].handle;
@@ -237,7 +239,22 @@ void Part1::renderGui()
       ImGui::DragFloat3("Rotation", &e.rotation.x, 1.0f);
       ImGui::DragFloat3("Scale", &e.scale.x, 0.05f, 0.01f, 100.0f);
       ImGui::ColorEdit3("Color", &e.color.r);
+
+      if (ImGui::BeginCombo("Shading Mode", SHADING_MODE_NAMES[static_cast<int>(e.shadingMode)]))
+      {
+        for (auto i = 0; i < 4; i++)
+        {
+          const bool isSelected = (e.shadingMode == static_cast<mdEngine::ShadingMode>(i));
+          if (ImGui::Selectable(SHADING_MODE_NAMES[i], isSelected))
+            e.shadingMode = static_cast<mdEngine::ShadingMode>(i);
+          if (isSelected)
+            ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+      }
+
       ImGui::DragFloat("Shininess", &e.shininess, 1.0f, 1.0f, 256.0f);
+      ImGui::DragFloat("Specular Strength", &e.specularStrength, 0.01f, 0.0f, 1.0f);
 
       if (ImGui::BeginCombo("Texture", e.texture.has_value() ? textures[e.texture.value()].name.c_str() : "None"))
       {

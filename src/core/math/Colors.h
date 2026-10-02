@@ -86,7 +86,7 @@ namespace mdEngine
       return *this;
     }
 
-    static Color3f toLinear(const Color3f& color)
+    static constexpr Color3f toLinear(const Color3f& color)
     {
       return Color3f(
         ch::toLinear(color.r),
@@ -94,7 +94,7 @@ namespace mdEngine
         ch::toLinear(color.b));
     }
 
-    static Color3f toGamma(const Color3f& color)
+    static constexpr Color3f toGamma(const Color3f& color)
     {
       return Color3f(
         ch::toGamma(color.r),
@@ -102,7 +102,7 @@ namespace mdEngine
         ch::toGamma(color.b));
     }
 
-    Color3f toLinear() const
+    [[nodiscard]] Color3f toLinear() const
     {
       return Color3f(
         ch::toLinear(r),
@@ -110,7 +110,7 @@ namespace mdEngine
         ch::toLinear(b));
     }
 
-    Color3f toGamma() const
+    [[nodiscard]] Color3f toGamma() const
     {
       return Color3f(
         ch::toGamma(r),

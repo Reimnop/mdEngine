@@ -5,6 +5,7 @@ layout(location = 0) out vec4 oFragColor;
 in vec3 vNormal;
 in vec2 vTexCoord;
 in vec3 vFragPos;
+in vec3 vVertexColor;
 in vec3 vGouroudColor;
 
 uniform mat4 uView;
@@ -23,7 +24,7 @@ void main() {
     vec4 textureColor = uUseTexture ? texture(uTexture, vTexCoord) : vec4(1.0);
 
     if (uShadingMode == 0) {
-        oFragColor = vec4(uColor, 1.0) * textureColor;
+        oFragColor = vec4(uColor, 1.0) * vec4(vVertexColor, 1.0) * textureColor;
         return;
     }
 
@@ -39,7 +40,7 @@ void main() {
         vec3 viewDir = normalize(-vFragPos);
         vec3 reflectDir = reflect(transpose(inverse(mat3(uView))) * -light, transpose(inverse(mat3(uView))) * n);
         vec3 specular = pow(max(dot(viewDir, reflectDir), 0.0), uShininess) * uLightColor;
-        oFragColor = vec4((diffuse + specular * uSpecularStrength + vec3(uAmbient)) * uColor, 1.0) * textureColor;
+        oFragColor = vec4((diffuse + specular * uSpecularStrength + vec3(uAmbient)) * uColor, 1.0) * vec4(vVertexColor, 1.0) * textureColor;
         return;
     }
 }

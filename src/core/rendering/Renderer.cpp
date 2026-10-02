@@ -139,8 +139,8 @@ namespace mdEngine
 
     glUniform3f(this->uLightColorLocation, lightColorLinear.r, lightColorLinear.g, lightColorLinear.b);
     glUniform1f(this->uAmbientLocation, ambientLinear);
-    glUniform1i(this->uShadingModeLocation, static_cast<GLint>(lightingObj.shadingMode));
-    glUniform1f(this->uSpecularStrengthLocation, lightingObj.specularStrength);
+
+    auto globalLightingMode = lightingObj.shadingMode == ShadingMode::Inherit ? ShadingMode::Phong : lightingObj.shadingMode;
 
     for (size_t i = 0; i < drawObjCount; i++)
     {
@@ -153,6 +153,9 @@ namespace mdEngine
       glUniformMatrix4fv(this->uMvpLocation, 1, GL_TRUE, mvp.m);
       glUniformMatrix4fv(this->uViewLocation, 1, GL_TRUE, cameraObj.view.m);
       glUniformMatrix4fv(this->uModelLocation, 1, GL_TRUE, drawObj.transform.m);
+      glUniform1i(this->uShadingModeLocation,
+        (drawObj.shadingMode == ShadingMode::Inherit ? static_cast<int>(globalLightingMode) : static_cast<int>(drawObj.shadingMode)) - 1);
+      glUniform1f(this->uSpecularStrengthLocation, drawObj.specularStrength);
       glUniform3f(this->uColorLocation, colorLinear.r, colorLinear.g, colorLinear.b);
       glUniform1f(this->uShininessLocation, drawObj.shininess);
       glUniform1i(this->uUseTextureLocation, drawObj.texture.has_value() ? 1 : 0);
@@ -339,14 +342,18 @@ namespace mdEngine
   {
     // pos
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, pos)));
 
     // normal
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(sizeof(Vec3)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, normal)));
 
     // texCoord
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(2 * sizeof(Vec3)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, texCoord)));
+
+    // color
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, color)));
   }
 } // mdEngine
