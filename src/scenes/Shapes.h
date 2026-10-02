@@ -23,7 +23,7 @@ struct MeshData
   std::vector<uint32_t> i;
 };
 
-inline bool is3D(const ShapeType t)
+constexpr bool is3D(const ShapeType t)
 {
   return t >= ShapeType::Cube;
 }

@@ -11,9 +11,13 @@ namespace
 {
   constexpr float DEG_TO_RAD = 0.01745329252f;
 
-  const mdEngine::Vec3 PALETTE[] = {
-    {0.90f, 0.35f, 0.30f}, {0.95f, 0.70f, 0.25f}, {0.45f, 0.80f, 0.40f},
-    {0.30f, 0.70f, 0.90f}, {0.55f, 0.45f, 0.90f}, {0.90f, 0.45f, 0.75f}
+  const mdEngine::Color3f PALETTE[] = {
+    mdEngine::Color3f(0.90f, 0.35f, 0.30f),
+    mdEngine::Color3f(0.95f, 0.70f, 0.25f),
+    mdEngine::Color3f(0.45f, 0.80f, 0.40f),
+    mdEngine::Color3f(0.30f, 0.70f, 0.90f),
+    mdEngine::Color3f(0.55f, 0.45f, 0.90f),
+    mdEngine::Color3f(0.90f, 0.45f, 0.75f)
   };
 
   // ImGui strings are UTF-8, std::filesystem needs to be told
@@ -29,7 +33,7 @@ namespace
   {
     e.texture = texture;
     if (texture.has_value())
-      e.color = {.x = 1.0f, .y = 1.0f, .z = 1.0f};
+      e.color = mdEngine::Color3f(1.0f);
   }
 
   mdEngine::Mat4 getTransform(const Entity& e)
@@ -232,7 +236,7 @@ void Part1::renderGui()
       ImGui::DragFloat3("Position", &e.position.x, 0.05f);
       ImGui::DragFloat3("Rotation", &e.rotation.x, 1.0f);
       ImGui::DragFloat3("Scale", &e.scale.x, 0.05f, 0.01f, 100.0f);
-      ImGui::ColorEdit3("Color", &e.color.x);
+      ImGui::ColorEdit3("Color", &e.color.r);
       ImGui::DragFloat("Shininess", &e.shininess, 1.0f, 1.0f, 256.0f);
 
       if (ImGui::BeginCombo("Texture", e.texture.has_value() ? textures[e.texture.value()].name.c_str() : "None"))

@@ -5,12 +5,12 @@
 
 #include "MeshHandle.h"
 #include "TextureHandle.h"
-#include "core/Window.h"
 #include "core/data/CameraObj.h"
 #include "core/data/DrawObj.h"
 #include "core/data/LightingObj.h"
 #include "core/data/Vertex.h"
 #include "core/memory/PooledSuballocator.h"
+#include "post_processing/Composite.h"
 
 namespace mdEngine
 {
@@ -44,8 +44,8 @@ namespace mdEngine
     GLint uAmbientLocation = 0;
     GLint uUseTextureLocation = 0;
 
-    GLuint fbo = 0, targetFbo = 0;
-    GLuint colorRboMsaa = 0, depthRbo = 0, targetTex = 0;
+    GLuint fbo = 0, postProcessingResolveFbo = 0;
+    GLuint colorRboMsaa = 0, depthRbo = 0, postProcessingTex1 = 0, postProcessingTex2 = 0;
     int fboWidth = 1280, fboHeight = 720;
 
     GLuint vao = 0, vbo = 0, ebo = 0;
@@ -56,6 +56,9 @@ namespace mdEngine
     std::vector<uint32_t> indices = std::vector<uint32_t>(eboSize);
     PooledSuballocator vertexBufferAllocator{};
     PooledSuballocator indexBufferAllocator{};
+
+    // post processors
+    Composite compositePostProcessor{};
 
     bool meshesDirty = true;
 

@@ -51,7 +51,7 @@ void SceneBase::renderGui()
     }
 
     ImGui::DragFloat3("Direction", &lightingObj.direction.x, 0.01f);
-    ImGui::ColorEdit3("Color", &lightingObj.color.x);
+    ImGui::ColorEdit3("Color", &lightingObj.color.r);
     ImGui::DragFloat("Ambient", &lightingObj.ambient, 0.01f, 0.0f, 1.0f);
     ImGui::DragFloat("Specular Strength", &lightingObj.specularStrength, 0.01f, 0.0f, 1.0f);
   }

@@ -62,7 +62,10 @@ void ElementInstance::render(const mdEngine::Mat4& transform, std::vector<mdEngi
   drawObjs.push_back({
     .meshHandle = meshLibraryPtr->sphere,
     .transform = transform * mdEngine::Mat4::scale(radius * 2.0f, radius * 2.0f, radius * 2.0f),
-    .color = {static_cast<float>(color.r) / 255.0f, static_cast<float>(color.g) / 255.0f, static_cast<float>(color.b) / 255.0f},
+    .color = mdEngine::Color3f(
+      static_cast<float>(color.r) / 255.0f,
+      static_cast<float>(color.g) / 255.0f,
+      static_cast<float>(color.b) / 255.0f),
     .shininess = 32.0f
   });
 
@@ -73,7 +76,7 @@ void ElementInstance::render(const mdEngine::Mat4& transform, std::vector<mdEngi
     drawObjs.push_back({
       .meshHandle = shellTori[i],
       .transform = transform,
-      .color = {0.2f, 0.2f, 0.2f},
+      .color = mdEngine::Color3f(0.2f, 0.2f, 0.2f),
       .shininess = 32.0f
     });
 
@@ -85,7 +88,7 @@ void ElementInstance::render(const mdEngine::Mat4& transform, std::vector<mdEngi
       drawObjs.push_back({
         .meshHandle = meshLibraryPtr->sphere,
         .transform = transform * mdEngine::Mat4::translate(x, 0.0f, z) * mdEngine::Mat4::scale(0.2f, 0.2f, 0.2f),
-        .color = {0.8f, 0.4f, 0.2f},
+        .color = mdEngine::Color3f(0.8f, 0.4f, 0.2f),
         .shininess = 32.0f
       });
     }
@@ -163,7 +166,10 @@ void MoleculeInstance::render(const mdEngine::Mat4& transform, std::vector<mdEng
       .transform = transform
         * mdEngine::Mat4::translate(atom.position.x, atom.position.y, atom.position.z)
         * mdEngine::Mat4::scale(atom.radius * 2.0f * atomScale, atom.radius * 2.0f * atomScale, atom.radius * 2.0f * atomScale),
-      .color = {static_cast<float>(atom.color.r) / 255.0f, static_cast<float>(atom.color.g) / 255.0f, static_cast<float>(atom.color.b) / 255.0f},
+      .color = mdEngine::Color3f(
+        static_cast<float>(atom.color.r) / 255.0f,
+        static_cast<float>(atom.color.g) / 255.0f,
+        static_cast<float>(atom.color.b) / 255.0f),
       .shininess = 32.0f
     });
   }
@@ -174,7 +180,7 @@ void MoleculeInstance::render(const mdEngine::Mat4& transform, std::vector<mdEng
     drawObjs.push_back({
       .meshHandle = meshLibraryPtr->cylinder,
       .transform = transform * connectionTransforms[i],
-      .color = {0.2f, 0.2f, 0.2f},
+      .color = mdEngine::Color3f(0.2f, 0.2f, 0.2f),
       .shininess = 32.0f
     });
   }
