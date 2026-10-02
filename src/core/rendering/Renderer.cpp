@@ -184,6 +184,11 @@ namespace mdEngine
       GL_NEAREST);
 
     // do post-processing
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_MULTISAMPLE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     if (compositePostProcessor.process(postProcessingTex1, postProcessingTex2, width, height))
       std::swap(postProcessingTex1, postProcessingTex2);
 
