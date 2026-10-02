@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 
-SceneBase::SceneBase(mdEngine::Renderer* rendererPtr, mdEngine::Window*): rendererPtr(rendererPtr), camera(15.0f)
+SceneBase::SceneBase(mdEngine::Renderer* rendererPtr, mdEngine::Window*): rendererPtr(rendererPtr), camera(15.0f), grid(rendererPtr)
 {
 }
 
@@ -81,4 +81,9 @@ void SceneBase::renderGui()
     ImGui::Image(colorTex, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
   }
   ImGui::End();
+}
+
+void SceneBase::render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj&, mdEngine::LightingObj&)
+{
+  grid.render(drawObjs);
 }

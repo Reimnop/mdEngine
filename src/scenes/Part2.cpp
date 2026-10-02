@@ -353,6 +353,8 @@ void Part2::renderGui()
 
 void Part2::render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj)
 {
+  SceneBase::render(drawObjs, cameraObj, lightingObj);
+
   cameraObj.view = camera.getViewMatrix();
 
   elementInstance->render(mdEngine::Mat4::translate(-5, 0, 0) * mdEngine::Mat4::rotate(atomTilt * DEG_TO_RAD, 1.0f, 0.0f, 0.0f), drawObjs);

@@ -164,7 +164,7 @@ namespace mdEngine
       glBindTexture(GL_TEXTURE_2D, drawObj.texture.has_value() ? drawObj.texture.value().handle : 0);
 
       glDrawElementsBaseVertex(
-        GL_TRIANGLES,
+        drawObj.primitiveType == PrimitiveType::Lines ? GL_LINES : GL_TRIANGLES,
         mesh.indexCount,
         GL_UNSIGNED_INT,
         reinterpret_cast<const void*>(mesh.indexAllocation.offset * sizeof(uint32_t)),

@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Grid.h"
 #include "core/Scene.h"
 #include "core/OrbitCamera.h"
 #include "core/Window.h"
@@ -23,9 +24,10 @@ protected:
   mdEngine::Renderer* rendererPtr;
   mdEngine::OrbitCamera camera;
 
-  virtual void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj) = 0;
+  virtual void render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj);
 private:
   std::vector<mdEngine::DrawObj> drawObjs;
   mdEngine::CameraObj cameraObj;
   mdEngine::LightingObj lightingObj;
+  Grid grid;
 };

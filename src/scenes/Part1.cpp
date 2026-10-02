@@ -157,9 +157,10 @@ void Part1::update(float deltaTime)
 
 void Part1::render(std::vector<mdEngine::DrawObj>& drawObjs, mdEngine::CameraObj& cameraObj, mdEngine::LightingObj& lightingObj)
 {
+  SceneBase::render(drawObjs, cameraObj, lightingObj);
+
   cameraObj.view = camera.getViewMatrix();
 
-  drawObjs.clear();
   for (const auto& e : entities)
   {
     mdEngine::DrawObj obj{

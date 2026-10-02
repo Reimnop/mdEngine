@@ -10,11 +10,18 @@
 
 namespace mdEngine
 {
+  enum class PrimitiveType
+  {
+    Triangles,
+    Lines
+  };
+
   struct DrawObj
   {
     MeshHandle meshHandle{};
     Mat4 transform{};
     Color3f color{0.8f, 0.8f, 0.8f};
+    PrimitiveType primitiveType = PrimitiveType::Triangles;
     ShadingMode shadingMode = ShadingMode::Inherit;
     float shininess = 32.0f;
     float specularStrength = 0.5f;
