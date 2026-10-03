@@ -45,7 +45,7 @@ namespace mdEngine
 
   void Orchestrator::renderSceneSwitcher()
   {
-    if (ImGui::Begin("Scene switcher"))
+    if (ImGui::Begin("Scene Switcher"))
     {
       if (ImGui::BeginCombo("Scene", SCENE_NAMES[currentSceneIdx]))
       {
