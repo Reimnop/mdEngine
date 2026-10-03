@@ -10,8 +10,8 @@ Grid::Grid(mdEngine::Renderer* rendererPtr): rendererPtr(rendererPtr)
   for (auto i = -10; i <= 10; i++)
   {
     const mdEngine::Color3f color = i == 0
-      ? mdEngine::Color3f(0.02f, 0.02f, 0.8f)
-      : mdEngine::Color3f(0.02f, 0.02f, 0.02f);
+      ? mdEngine::Color3f(0.08f, 0.08f, 0.8f)
+      : mdEngine::Color3f(0.08f, 0.08f, 0.08f);
 
     vertices.push_back({{static_cast<float>(i), 0.0f, -10.0f}, {0, 1, 0}, {0, 0}, color});
     vertices.push_back({{static_cast<float>(i), 0.0f, 10.0f}, {0, 1, 0}, {0, 1}, color});
@@ -23,8 +23,8 @@ Grid::Grid(mdEngine::Renderer* rendererPtr): rendererPtr(rendererPtr)
   for (auto i = -10; i <= 10; i++)
   {
     const mdEngine::Color3f color = i == 0
-      ? mdEngine::Color3f(0.8f, 0.02f, 0.02f)
-      : mdEngine::Color3f(0.02f, 0.02f, 0.02f);
+      ? mdEngine::Color3f(0.8f, 0.08f, 0.08f)
+      : mdEngine::Color3f(0.08f, 0.08f, 0.08f);
 
     vertices.push_back({{-10.0f, 0.0f, static_cast<float>(i)}, {0, 1, 0}, {0, 0}, color});
     vertices.push_back({{10.0f, 0.0f, static_cast<float>(i)}, {0, 1, 0}, {1, 0}, color});
