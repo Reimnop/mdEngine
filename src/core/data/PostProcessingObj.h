@@ -13,7 +13,7 @@ namespace mdEngine
     float bloomKnee = 0.5f;
     Color3f bloomColor{1.0f, 1.0f, 1.0f};
 
-    bool useTonemapping = true;
+    bool useTonemapping = false;
     float exposure = 1.0f;
   };
 } // mdEngine
