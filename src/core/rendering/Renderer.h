@@ -36,7 +36,7 @@ namespace mdEngine
     MeshHandle createMesh(const Vertex* vertices, GLsizei vertexCount, const uint32_t* indices, GLsizei indexCount);
     void deleteMesh(MeshHandle meshHandle);
 
-    TextureHandle createTexture(GLsizei width, GLsizei height, const void* data);
+    TextureHandle createTexture(GLsizei width, GLsizei height, const void* data, bool isSrgb = false);
     void deleteTexture(TextureHandle textureHandle);
   private:
     GLuint program = 0;

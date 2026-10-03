@@ -133,7 +133,7 @@ void Part1::loadTexture(const std::string& path)
     const auto stem = fsPath.stem().u8string();
     textures.push_back({
       .name = std::string(stem.begin(), stem.end()),
-      .handle = rendererPtr->createTexture(image.width, image.height, image.pixels.data()),
+      .handle = rendererPtr->createTexture(image.width, image.height, image.pixels.data(), true),
       .width = image.width,
       .height = image.height});
 
