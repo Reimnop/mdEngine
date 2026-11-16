@@ -1,6 +1,6 @@
 # mdEngine
 
-This is Assigment 1 for the "Graphics Programming" course at HCMUT.
+This is Assigment 2 for the "Graphics Programming" course at HCMUT.
 
 ## Building
 

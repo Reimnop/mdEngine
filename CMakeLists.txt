@@ -21,6 +21,20 @@ target_link_libraries(mdEngine PRIVATE glfw)
 add_subdirectory(json)
 target_link_libraries(mdEngine PRIVATE nlohmann_json)
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)
+set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF CACHE BOOL "" FORCE)
+foreach(IMPORTER OBJ FBX GLTF COLLADA 3DS STL PLY)
+    set(ASSIMP_BUILD_${IMPORTER}_IMPORTER ON CACHE BOOL "" FORCE)
+endforeach()
+add_subdirectory(assimp)
+target_link_libraries(mdEngine PRIVATE assimp::assimp)
+
 target_include_directories(mdEngine PRIVATE "src" "include" "${IMGUI_DIR}" "${IMGUI_DIR}/backends")
 
 add_custom_command(
@@ -30,5 +44,5 @@ add_custom_command(
     "$<TARGET_FILE_DIR:mdEngine>/assets")
 
 if(WIN32)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
+    target_link_options(mdEngine PRIVATE -static)
 endif()
