@@ -9,8 +9,7 @@
 namespace mdEngine
 {
   constexpr const char* SCENE_NAMES[] = {
-    "Part 1 (Drawing Basic Shapes)",
-    "Part 2 (Visualization of Atoms and Molecules)"
+    "Assignment 2"
   };
 
   class Orchestrator

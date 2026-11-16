@@ -1,7 +1,6 @@
 #include "Orchestrator.h"
 
 #include "scenes/Part1.h"
-#include "scenes/Part2.h"
 
 namespace mdEngine
 {
@@ -60,9 +59,6 @@ namespace mdEngine
             {
               case 0:
                 currentScene = std::make_unique<Part1>(&renderer, &window);
-                break;
-              case 1:
-                currentScene = std::make_unique<Part2>(&renderer, &window);
                 break;
               default:
                 break;

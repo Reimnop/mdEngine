@@ -32,5 +32,5 @@ private:
   mdEngine::PostProcessingObj postProcessingObj;
   Grid grid;
 
-  bool gridEnabled = false;
+  bool gridEnabled = true;
 };
