@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include "LightingObj.h"
+#include "core/data/Color3.h"
 #include "core/math/Colors.h"
 #include "core/math/Matrices.h"
 #include "core/rendering/MeshHandle.h"
@@ -27,6 +27,8 @@ namespace mdEngine
     MeshHandle meshHandle{};
     Mat4 transform{};
     Color3f color{0.8f, 0.8f, 0.8f};
+    bool drawInIdPass;
+    Color3 idColor{};
     PrimitiveType primitiveType = PrimitiveType::Triangles;
     ShadingMode shadingMode = ShadingMode::Normal;
     float shininess = 32.0f;

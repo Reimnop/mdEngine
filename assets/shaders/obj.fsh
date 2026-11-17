@@ -6,7 +6,6 @@ in vec3 vNormal;
 in vec2 vTexCoord;
 in vec3 vFragPos;
 in vec3 vVertexColor;
-in vec3 vGouroudColor;
 
 uniform mat4 uView;
 uniform vec3 uColor;

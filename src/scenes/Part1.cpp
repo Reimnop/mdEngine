@@ -54,18 +54,20 @@ void Part1::collectDrawObjs(const Model& model, const SceneNode& node, const Mat
     return;
 
   const Mat4 world = parentWorld * node.transform.toMatrix();
-  for (const auto meshIdx : node.meshes)
+  for (const auto meshIdx : node.meshIndices)
   {
     const auto& mesh = model.meshes[meshIdx];
-    const auto& material = model.materials[mesh.material];
+    const auto& material = model.materials[mesh.materialIndex];
     drawObjs.push_back(mdEngine::DrawObj{
       .meshHandle = mesh.handle,
       .transform = world,
       .color = material.color,
+      .drawInIdPass = true,
+      .idColor = node.idColor,
       .shininess = material.shininess,
       .specularStrength = material.specularStrength,
-      .texture = material.texture.has_value()
-        ? std::optional(model.textures[material.texture.value()].handle)
+      .texture = material.textureIndex.has_value()
+        ? std::optional(model.textures[material.textureIndex.value()].handle)
         : std::nullopt
     });
   }
@@ -105,7 +107,7 @@ void Part1::importModel(const std::string& path)
         .color = material.color,
         .shininess = material.shininess,
         .specularStrength = material.specularStrength,
-        .texture = material.texture});
+        .textureIndex = material.texture});
 
     size_t vertexCount = 0, triangleCount = 0;
     for (const auto& mesh : data.meshes)
@@ -119,12 +121,13 @@ void Part1::importModel(const std::string& path)
           : rendererPtr->createMesh(
               mesh.vertices.data(), static_cast<GLsizei>(mesh.vertices.size()),
               mesh.indices.data(), static_cast<GLsizei>(mesh.indices.size())),
-        .material = mesh.material,
+        .materialIndex = mesh.material,
         .vertexCount = mesh.vertices.size(),
         .triangleCount = mesh.indices.size() / 3});
     }
 
-    model->root = buildNode(data.root, nullptr);
+    std::mt19937_64 rng(std::random_device{}());
+    model->root = buildNode(data.root, nullptr, rng);
 
     selectedNode = model->root.get();
     selectedModel = model.get();
@@ -143,17 +146,19 @@ void Part1::importModel(const std::string& path)
   }
 }
 
-std::unique_ptr<SceneNode> Part1::buildNode(const ModelNode& source, SceneNode* parent)
+std::unique_ptr<SceneNode> Part1::buildNode(const ModelNode& source, SceneNode* parent, std::mt19937_64& rng)
 {
   auto node = std::make_unique<SceneNode>();
   node->id = nextNodeId++;
   node->name = source.name;
+  auto id64 = rng();
+  node->idColor = mdEngine::Color3(id64 & 0xFF, (id64 >> 8) & 0xFF, (id64 >> 16) & 0xFF);
   node->transform = source.transform;
-  node->meshes = source.meshes;
+  node->meshIndices = source.meshes;
   node->parent = parent;
   node->children.reserve(source.children.size());
   for (const auto& child : source.children)
-    node->children.push_back(buildNode(child, node.get()));
+    node->children.push_back(buildNode(child, node.get(), rng));
   return node;
 }
 
@@ -195,8 +200,6 @@ void Part1::clearScene()
   selectedNode = nullptr;
   selectedModel = nullptr;
 }
-
-// ---- GUI ----
 
 void Part1::drawImportPanel()
 {
@@ -260,7 +263,7 @@ void Part1::drawTreeNode(Model& model, SceneNode& node)
   if (!node.visible)
     ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
 
-  const bool open = ImGui::TreeNodeEx("##node", flags, "%s%s", node.name.c_str(), node.meshes.empty() ? "" : "  [mesh]");
+  const bool open = ImGui::TreeNodeEx("##node", flags, "%s%s", node.name.c_str(), node.meshIndices.empty() ? "" : "  [mesh]");
   if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
   {
     selectedNode = &node;
@@ -285,9 +288,9 @@ void Part1::drawMaterialEditor(MaterialAsset& material, const Model& model)
   ImGui::DragFloat("Shininess", &material.shininess, 0.5f, 1.0f, 256.0f);
   ImGui::DragFloat("Specular", &material.specularStrength, 0.01f, 0.0f, 1.0f);
 
-  if (material.texture.has_value())
+  if (material.textureIndex.has_value())
   {
-    const auto& texture = model.textures[material.texture.value()];
+    const auto& texture = model.textures[material.textureIndex.value()];
     ImGui::Text("Texture: %dx%d", texture.width, texture.height);
   }
   else
@@ -326,13 +329,13 @@ void Part1::drawInspector()
     if (ImGui::Button("Reset transform"))
       node.transform = mdEngine::Transform{};
 
-    if (!node.meshes.empty())
+    if (!node.meshIndices.empty())
     {
       ImGui::SeparatorText("Meshes");
-      for (const auto meshIdx : node.meshes)
+      for (const auto meshIdx : node.meshIndices)
       {
         const auto& mesh = model.meshes[meshIdx];
-        auto& material = model.materials[mesh.material];
+        auto& material = model.materials[mesh.materialIndex];
 
         ImGui::PushID(static_cast<int>(meshIdx));
         if (ImGui::TreeNode("##mesh", "%s (%zu verts, %zu tris)", mesh.name.c_str(), mesh.vertexCount, mesh.triangleCount))

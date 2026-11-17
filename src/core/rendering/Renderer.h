@@ -39,21 +39,32 @@ namespace mdEngine
     TextureHandle createTexture(GLsizei width, GLsizei height, const void* data, bool isSrgb = false);
     void deleteTexture(TextureHandle textureHandle);
   private:
-    GLuint program = 0;
-    GLint uMvpLocation = 0;
-    GLint uModelLocation = 0;
-    GLint uViewLocation = 0;
-    GLint uShadingModeLocation = 0;
-    GLint uColorLocation = 0;
-    GLint uShininessLocation = 0;
-    GLint uSpecularStrengthLocation = 0;
-    GLint uLightDirLocation = 0;
-    GLint uLightColorLocation = 0;
-    GLint uAmbientLocation = 0;
-    GLint uUseTextureLocation = 0;
+    GLuint mainProgram = 0;
+    GLint mainMvpLocation = 0;
+    GLint mainModelLocation = 0;
+    GLint mainViewLocation = 0;
+    GLint mainShadingModeLocation = 0;
+    GLint mainColorLocation = 0;
+    GLint mainShininessLocation = 0;
+    GLint mainSpecularStrengthLocation = 0;
+    GLint mainLightDirLocation = 0;
+    GLint mainLightColorLocation = 0;
+    GLint mainAmbientLocation = 0;
+    GLint mainUseTextureLocation = 0;
 
-    GLuint fbo = 0, postProcessingResolveFbo = 0;
-    GLuint colorRboMsaa = 0, depthRbo = 0, postProcessingTex1 = 0, postProcessingTex2 = 0;
+    GLuint solidColorProgram = 0;
+    GLint solidColorMvpLocation = 0;
+    GLint solidColorColorLocation = 0;
+
+    GLuint fbo = 0;
+    GLuint colorRboMsaa = 0, depthRbo = 0;
+
+    GLuint solidColorFbo = 0;
+    GLuint solidColorTexture = 0, solidColorDepthTexture = 0;
+
+    GLuint postProcessingResolveFbo = 0;
+    GLuint postProcessingTex1 = 0, postProcessingTex2 = 0;
+
     int fboWidth = 1280, fboHeight = 720;
 
     GLuint vao = 0, vbo = 0, ebo = 0;

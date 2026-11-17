@@ -22,69 +22,122 @@ namespace mdEngine
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, eboSize * static_cast<GLsizei>(sizeof(uint32_t)), nullptr, GL_DYNAMIC_DRAW);
 
-    // setup fbo
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    {
+      // setup fbo
+      glGenFramebuffers(1, &fbo);
+      glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glGenRenderbuffers(1, &colorRboMsaa);
-    glBindRenderbuffer(GL_RENDERBUFFER, colorRboMsaa);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGBA16F, fboWidth, fboHeight);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRboMsaa);
+      glGenRenderbuffers(1, &colorRboMsaa);
+      glBindRenderbuffer(GL_RENDERBUFFER, colorRboMsaa);
+      glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGBA16F, fboWidth, fboHeight);
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRboMsaa);
 
-    glGenRenderbuffers(1, &depthRbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
+      glGenRenderbuffers(1, &depthRbo);
+      glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
+      glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight);
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
+    }
 
-    // setup resolve fbo
-    glGenFramebuffers(1, &postProcessingResolveFbo);
+    {
+      // setup solid color fbo
+      glGenFramebuffers(1, &solidColorFbo);
+      glBindFramebuffer(GL_FRAMEBUFFER, solidColorFbo);
 
-    // setup post-processing textures
-    glGenTextures(1, &postProcessingTex1);
-    glBindTexture(GL_TEXTURE_2D, postProcessingTex1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glGenTextures(1, &solidColorTexture);
+      glBindTexture(GL_TEXTURE_2D, solidColorTexture);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, solidColorTexture, 0);
 
-    glGenTextures(1, &postProcessingTex2);
-    glBindTexture(GL_TEXTURE_2D, postProcessingTex2);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glGenTextures(1, &solidColorDepthTexture);
+      glBindTexture(GL_TEXTURE_2D, solidColorDepthTexture);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, solidColorDepthTexture, 0);
+    }
 
-    // init shader
-    const auto vss = io::readFileAsString("assets/shaders/obj.vsh");
-    const auto fss = io::readFileAsString("assets/shaders/obj.fsh");
+    {
+      // setup resolve fbo
+      glGenFramebuffers(1, &postProcessingResolveFbo);
 
-    const auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    const auto vssPtr = vss.c_str();
-    glShaderSource(vertexShader, 1, &vssPtr, nullptr);
-    glCompileShader(vertexShader);
+      // setup post-processing textures
+      glGenTextures(1, &postProcessingTex1);
+      glBindTexture(GL_TEXTURE_2D, postProcessingTex1);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    const auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    const auto fssPtr = fss.c_str();
-    glShaderSource(fragmentShader, 1, &fssPtr, nullptr);
-    glCompileShader(fragmentShader);
+      glGenTextures(1, &postProcessingTex2);
+      glBindTexture(GL_TEXTURE_2D, postProcessingTex2);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, fboWidth, fboHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    }
 
-    this->program = glCreateProgram();
-    glAttachShader(this->program, vertexShader);
-    glAttachShader(this->program, fragmentShader);
-    glLinkProgram(this->program);
+    // init main shader program
+    {
+      const auto vss = io::readFileAsString("assets/shaders/obj.vsh");
+      const auto fss = io::readFileAsString("assets/shaders/obj.fsh");
 
-    this->uMvpLocation = glGetUniformLocation(this->program, "uMvp");
-    this->uModelLocation = glGetUniformLocation(this->program, "uModel");
-    this->uViewLocation = glGetUniformLocation(this->program, "uView");
-    this->uShadingModeLocation = glGetUniformLocation(this->program, "uShadingMode");
-    this->uColorLocation = glGetUniformLocation(this->program, "uColor");
-    this->uShininessLocation = glGetUniformLocation(this->program, "uShininess");
-    this->uSpecularStrengthLocation = glGetUniformLocation(this->program, "uSpecularStrength");
-    this->uLightDirLocation = glGetUniformLocation(this->program, "uLightDir");
-    this->uLightColorLocation = glGetUniformLocation(this->program, "uLightColor");
-    this->uAmbientLocation = glGetUniformLocation(this->program, "uAmbient");
-    this->uUseTextureLocation = glGetUniformLocation(this->program, "uUseTexture");
+      const auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
+      const auto vssPtr = vss.c_str();
+      glShaderSource(vertexShader, 1, &vssPtr, nullptr);
+      glCompileShader(vertexShader);
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+      const auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+      const auto fssPtr = fss.c_str();
+      glShaderSource(fragmentShader, 1, &fssPtr, nullptr);
+      glCompileShader(fragmentShader);
+
+      this->mainProgram = glCreateProgram();
+      glAttachShader(this->mainProgram, vertexShader);
+      glAttachShader(this->mainProgram, fragmentShader);
+      glLinkProgram(this->mainProgram);
+
+      this->mainMvpLocation = glGetUniformLocation(this->mainProgram, "uMvp");
+      this->mainModelLocation = glGetUniformLocation(this->mainProgram, "uModel");
+      this->mainViewLocation = glGetUniformLocation(this->mainProgram, "uView");
+      this->mainShadingModeLocation = glGetUniformLocation(this->mainProgram, "uShadingMode");
+      this->mainColorLocation = glGetUniformLocation(this->mainProgram, "uColor");
+      this->mainShininessLocation = glGetUniformLocation(this->mainProgram, "uShininess");
+      this->mainSpecularStrengthLocation = glGetUniformLocation(this->mainProgram, "uSpecularStrength");
+      this->mainLightDirLocation = glGetUniformLocation(this->mainProgram, "uLightDir");
+      this->mainLightColorLocation = glGetUniformLocation(this->mainProgram, "uLightColor");
+      this->mainAmbientLocation = glGetUniformLocation(this->mainProgram, "uAmbient");
+      this->mainUseTextureLocation = glGetUniformLocation(this->mainProgram, "uUseTexture");
+
+      glDeleteShader(vertexShader);
+      glDeleteShader(fragmentShader);
+    }
+
+    // init solid color shader program
+    {
+      const auto vss = io::readFileAsString("assets/shaders/objsolidcolor.vsh");
+      const auto fss = io::readFileAsString("assets/shaders/objsolidcolor.fsh");
+
+      const auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
+      const auto vssPtr = vss.c_str();
+      glShaderSource(vertexShader, 1, &vssPtr, nullptr);
+      glCompileShader(vertexShader);
+
+      const auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+      const auto fssPtr = fss.c_str();
+      glShaderSource(fragmentShader, 1, &fssPtr, nullptr);
+      glCompileShader(fragmentShader);
+
+      this->solidColorProgram = glCreateProgram();
+      glAttachShader(this->solidColorProgram, vertexShader);
+      glAttachShader(this->solidColorProgram, fragmentShader);
+      glLinkProgram(this->solidColorProgram);
+
+      this->solidColorMvpLocation = glGetUniformLocation(this->mainProgram, "uMvp");
+      this->solidColorColorLocation = glGetUniformLocation(this->mainProgram, "uColor");
+
+      glDeleteShader(vertexShader);
+      glDeleteShader(fragmentShader);
+    }
   }
 
   Renderer::~Renderer()
@@ -98,7 +151,7 @@ namespace mdEngine
     glDeleteFramebuffers(1, &postProcessingResolveFbo);
     glDeleteTextures(1, &postProcessingTex1);
     glDeleteTextures(1, &postProcessingTex2);
-    glDeleteProgram(this->program);
+    glDeleteProgram(this->mainProgram);
   }
 
   GLuint Renderer::renderFrame(
@@ -126,16 +179,16 @@ namespace mdEngine
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
 
-    glUseProgram(this->program);
+    glUseProgram(this->mainProgram);
     glBindVertexArray(this->vao);
 
-    glUniform3f(this->uLightDirLocation, lightingObj.direction.x, lightingObj.direction.y, lightingObj.direction.z);
+    glUniform3f(this->mainLightDirLocation, lightingObj.direction.x, lightingObj.direction.y, lightingObj.direction.z);
 
     const auto lightColorLinear = lightingObj.color.toLinear() * lightingObj.intensity;
     const auto ambientLinear = ch::toLinear(lightingObj.ambient);
 
-    glUniform3f(this->uLightColorLocation, lightColorLinear.r, lightColorLinear.g, lightColorLinear.b);
-    glUniform1f(this->uAmbientLocation, ambientLinear);
+    glUniform3f(this->mainLightColorLocation, lightColorLinear.r, lightColorLinear.g, lightColorLinear.b);
+    glUniform1f(this->mainAmbientLocation, ambientLinear);
 
     for (size_t i = 0; i < drawObjCount; i++)
     {
@@ -145,17 +198,50 @@ namespace mdEngine
       const auto mvp = proj * cameraObj.view * drawObj.transform;
       const auto colorLinear = drawObj.color.toLinear();
 
-      glUniformMatrix4fv(this->uMvpLocation, 1, GL_TRUE, mvp.m);
-      glUniformMatrix4fv(this->uViewLocation, 1, GL_TRUE, cameraObj.view.m);
-      glUniformMatrix4fv(this->uModelLocation, 1, GL_TRUE, drawObj.transform.m);
-      glUniform1i(this->uShadingModeLocation, static_cast<GLint>(drawObj.shadingMode));
-      glUniform1f(this->uSpecularStrengthLocation, drawObj.specularStrength);
-      glUniform3f(this->uColorLocation, colorLinear.r, colorLinear.g, colorLinear.b);
-      glUniform1f(this->uShininessLocation, drawObj.shininess);
-      glUniform1i(this->uUseTextureLocation, drawObj.texture.has_value() ? 1 : 0);
+      glUniformMatrix4fv(this->mainMvpLocation, 1, GL_TRUE, mvp.m);
+      glUniformMatrix4fv(this->mainViewLocation, 1, GL_TRUE, cameraObj.view.m);
+      glUniformMatrix4fv(this->mainModelLocation, 1, GL_TRUE, drawObj.transform.m);
+      glUniform1i(this->mainShadingModeLocation, static_cast<GLint>(drawObj.shadingMode));
+      glUniform1f(this->mainSpecularStrengthLocation, drawObj.specularStrength);
+      glUniform3f(this->mainColorLocation, colorLinear.r, colorLinear.g, colorLinear.b);
+      glUniform1f(this->mainShininessLocation, drawObj.shininess);
+      glUniform1i(this->mainUseTextureLocation, drawObj.texture.has_value() ? 1 : 0);
 
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, drawObj.texture.has_value() ? drawObj.texture.value().handle : 0);
+
+      glDrawElementsBaseVertex(
+        drawObj.primitiveType == PrimitiveType::Lines ? GL_LINES : GL_TRIANGLES,
+        mesh.indexCount,
+        GL_UNSIGNED_INT,
+        reinterpret_cast<const void*>(mesh.indexAllocation.offset * sizeof(uint32_t)),
+        static_cast<GLint>(mesh.vertexAllocation.offset));
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, solidColorFbo);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glUseProgram(this->solidColorProgram);
+
+    for (size_t i = 0; i < drawObjCount; i++)
+    {
+      const auto& drawObj = drawObjs[i];
+      if (!drawObj.drawInIdPass) {
+        continue;
+      }
+
+      const auto& mesh = drawObj.meshHandle;
+
+      const auto mvp = proj * cameraObj.view * drawObj.transform;
+
+      glUniformMatrix4fv(this->solidColorMvpLocation, 1, GL_TRUE, mvp.m);
+      glUniform3f(
+        this->solidColorColorLocation,
+        drawObj.idColor.r / 255.0f,
+        drawObj.idColor.g / 255.0f,
+        drawObj.idColor.b / 255.0f);
 
       glDrawElementsBaseVertex(
         drawObj.primitiveType == PrimitiveType::Lines ? GL_LINES : GL_TRIANGLES,
@@ -260,12 +346,14 @@ namespace mdEngine
     // delete, create new
     glDeleteRenderbuffers(1, &colorRboMsaa);
     glDeleteRenderbuffers(1, &depthRbo);
+    glDeleteTextures(1, &solidColorTexture);
+    glDeleteTextures(1, &solidColorDepthTexture);
     glDeleteTextures(1, &postProcessingTex1);
     glDeleteTextures(1, &postProcessingTex2);
 
+    // re-init MSAA renderbuffers
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    // re-init MSAA renderbuffers
     glGenRenderbuffers(1, &colorRboMsaa);
     glBindRenderbuffer(GL_RENDERBUFFER, colorRboMsaa);
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGBA16F, fboWidth, fboHeight);
@@ -275,6 +363,23 @@ namespace mdEngine
     glBindRenderbuffer(GL_RENDERBUFFER, depthRbo);
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRbo);
+
+    // re-init solid color textures
+    glBindFramebuffer(GL_FRAMEBUFFER, solidColorFbo);
+
+    glGenTextures(1, &solidColorTexture);
+    glBindTexture(GL_TEXTURE_2D, solidColorTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, fboWidth, fboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, solidColorTexture, 0);
+
+    glGenTextures(1, &solidColorDepthTexture);
+    glBindTexture(GL_TEXTURE_2D, solidColorDepthTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, fboWidth, fboHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, solidColorDepthTexture, 0);
 
     // re-init post-processing textures
     glGenTextures(1, &postProcessingTex1);
