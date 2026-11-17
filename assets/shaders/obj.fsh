@@ -23,7 +23,7 @@ uniform sampler2D uTexture;
 void main() {
     vec4 textureColor = uUseTexture ? texture(uTexture, vTexCoord) : vec4(1.0);
 
-    if (uShadingMode != 1){
+    if (uShadingMode == 1){
         oFragColor = vec4(uColor * vVertexColor, 1.0) * textureColor;
         return;
     }
