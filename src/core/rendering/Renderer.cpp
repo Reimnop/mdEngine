@@ -123,16 +123,8 @@ namespace mdEngine
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-
-    if (lightingObj.fillMode == FillMode::Wireframe)
-      glDisable(GL_CULL_FACE);
-    else
-    {
-      glEnable(GL_CULL_FACE);
-      glFrontFace(GL_CCW);
-    }
-
-    glPolygonMode(GL_FRONT_AND_BACK, lightingObj.fillMode == FillMode::Wireframe ? GL_LINE : GL_FILL);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
 
     glUseProgram(this->program);
     glBindVertexArray(this->vao);
@@ -145,8 +137,6 @@ namespace mdEngine
     glUniform3f(this->uLightColorLocation, lightColorLinear.r, lightColorLinear.g, lightColorLinear.b);
     glUniform1f(this->uAmbientLocation, ambientLinear);
 
-    auto globalLightingMode = lightingObj.shadingMode == ShadingMode::Inherit ? ShadingMode::Phong : lightingObj.shadingMode;
-
     for (size_t i = 0; i < drawObjCount; i++)
     {
       const auto& drawObj = drawObjs[i];
@@ -158,8 +148,7 @@ namespace mdEngine
       glUniformMatrix4fv(this->uMvpLocation, 1, GL_TRUE, mvp.m);
       glUniformMatrix4fv(this->uViewLocation, 1, GL_TRUE, cameraObj.view.m);
       glUniformMatrix4fv(this->uModelLocation, 1, GL_TRUE, drawObj.transform.m);
-      glUniform1i(this->uShadingModeLocation,
-        (drawObj.shadingMode == ShadingMode::Inherit ? static_cast<int>(globalLightingMode) : static_cast<int>(drawObj.shadingMode)) - 1);
+      glUniform1i(this->uShadingModeLocation, static_cast<GLint>(drawObj.shadingMode));
       glUniform1f(this->uSpecularStrengthLocation, drawObj.specularStrength);
       glUniform3f(this->uColorLocation, colorLinear.r, colorLinear.g, colorLinear.b);
       glUniform1f(this->uShininessLocation, drawObj.shininess);

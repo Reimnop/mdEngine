@@ -38,7 +38,6 @@ struct MaterialAsset
   mdEngine::Color3f color{0.8f, 0.8f, 0.8f};
   float shininess = 32.0f;
   float specularStrength = 0.5f;
-  mdEngine::ShadingMode shadingMode = mdEngine::ShadingMode::Inherit;
   std::optional<size_t> texture; // index into Model::textures
 };
 

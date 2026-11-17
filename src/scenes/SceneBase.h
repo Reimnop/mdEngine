@@ -12,7 +12,6 @@
 #include "core/rendering/Renderer.h"
 
 constexpr const char* FILL_MODE_NAMES[2] = {"Solid", "Wireframe"};
-constexpr const char* SHADING_MODE_NAMES[4] = {"Inherit", "Flat", "Gouraud", "Phong"};
 
 class SceneBase : public mdEngine::Scene
 {

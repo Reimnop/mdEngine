@@ -62,7 +62,6 @@ void Part1::collectDrawObjs(const Model& model, const SceneNode& node, const Mat
       .meshHandle = mesh.handle,
       .transform = world,
       .color = material.color,
-      .shadingMode = material.shadingMode,
       .shininess = material.shininess,
       .specularStrength = material.specularStrength,
       .texture = material.texture.has_value()
@@ -285,19 +284,6 @@ void Part1::drawMaterialEditor(MaterialAsset& material, const Model& model)
   ImGui::ColorEdit3("Color", &material.color.r);
   ImGui::DragFloat("Shininess", &material.shininess, 0.5f, 1.0f, 256.0f);
   ImGui::DragFloat("Specular", &material.specularStrength, 0.01f, 0.0f, 1.0f);
-
-  if (ImGui::BeginCombo("Shading", SHADING_MODE_NAMES[static_cast<int>(material.shadingMode)]))
-  {
-    for (auto i = 0; i < 4; i++)
-    {
-      const bool isSelected = (material.shadingMode == static_cast<mdEngine::ShadingMode>(i));
-      if (ImGui::Selectable(SHADING_MODE_NAMES[i], isSelected))
-        material.shadingMode = static_cast<mdEngine::ShadingMode>(i);
-      if (isSelected)
-        ImGui::SetItemDefaultFocus();
-    }
-    ImGui::EndCombo();
-  }
 
   if (material.texture.has_value())
   {

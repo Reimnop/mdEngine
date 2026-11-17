@@ -29,32 +29,6 @@ void SceneBase::renderGui()
 
   if (ImGui::Begin("Lighting"))
   {
-    if (ImGui::BeginCombo("Fill Mode", FILL_MODE_NAMES[static_cast<int>(lightingObj.fillMode)]))
-    {
-      for (auto i = 0; i < 2; i++)
-      {
-        const bool isSelected = (lightingObj.fillMode == static_cast<mdEngine::FillMode>(i));
-        if (ImGui::Selectable(FILL_MODE_NAMES[i], isSelected))
-          lightingObj.fillMode = static_cast<mdEngine::FillMode>(i);
-        if (isSelected)
-          ImGui::SetItemDefaultFocus();
-      }
-      ImGui::EndCombo();
-    }
-
-    if (ImGui::BeginCombo("Shading Mode", SHADING_MODE_NAMES[static_cast<int>(lightingObj.shadingMode)]))
-    {
-      for (auto i = 1; i < 4; i++)
-      {
-        const bool isSelected = (lightingObj.shadingMode == static_cast<mdEngine::ShadingMode>(i));
-        if (ImGui::Selectable(SHADING_MODE_NAMES[i], isSelected))
-          lightingObj.shadingMode = static_cast<mdEngine::ShadingMode>(i);
-        if (isSelected)
-          ImGui::SetItemDefaultFocus();
-      }
-      ImGui::EndCombo();
-    }
-
     ImGui::DragFloat3("Direction", &lightingObj.direction.x, 0.01f);
     ImGui::ColorEdit3("Color", &lightingObj.color.r);
     ImGui::ColorEdit3("Clear Color", &lightingObj.clearColor.r);

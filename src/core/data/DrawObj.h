@@ -16,13 +16,19 @@ namespace mdEngine
     Lines
   };
 
+  enum class ShadingMode
+  {
+    Normal = 0,
+    Flat = 1
+  };
+
   struct DrawObj
   {
     MeshHandle meshHandle{};
     Mat4 transform{};
     Color3f color{0.8f, 0.8f, 0.8f};
     PrimitiveType primitiveType = PrimitiveType::Triangles;
-    ShadingMode shadingMode = ShadingMode::Inherit;
+    ShadingMode shadingMode = ShadingMode::Normal;
     float shininess = 32.0f;
     float specularStrength = 0.5f;
     std::optional<TextureHandle> texture{};
