@@ -132,8 +132,8 @@ namespace mdEngine
       glAttachShader(this->solidColorProgram, fragmentShader);
       glLinkProgram(this->solidColorProgram);
 
-      this->solidColorMvpLocation = glGetUniformLocation(this->mainProgram, "uMvp");
-      this->solidColorColorLocation = glGetUniformLocation(this->mainProgram, "uColor");
+      this->solidColorMvpLocation = glGetUniformLocation(this->solidColorProgram, "uMvp");
+      this->solidColorColorLocation = glGetUniformLocation(this->solidColorProgram, "uColor");
 
       glDeleteShader(vertexShader);
       glDeleteShader(fragmentShader);
@@ -152,6 +152,11 @@ namespace mdEngine
     glDeleteTextures(1, &postProcessingTex1);
     glDeleteTextures(1, &postProcessingTex2);
     glDeleteProgram(this->mainProgram);
+
+    glDeleteFramebuffers(1, &solidColorFbo);
+    glDeleteTextures(1, &solidColorTexture);
+    glDeleteTextures(1, &solidColorDepthTexture);
+    glDeleteProgram(this->solidColorProgram);
   }
 
   GLuint Renderer::renderFrame(
@@ -217,6 +222,8 @@ namespace mdEngine
         reinterpret_cast<const void*>(mesh.indexAllocation.offset * sizeof(uint32_t)),
         static_cast<GLint>(mesh.vertexAllocation.offset));
     }
+
+    glDisable(GL_MULTISAMPLE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, solidColorFbo);
 
@@ -432,10 +439,14 @@ namespace mdEngine
 
   TextureHandle Renderer::createTexture(const GLsizei width, const GLsizei height, const void* data, bool isSrgb)
   {
+    const GLint internalFormat = isSrgb
+      ? GL_SRGB8_ALPHA8
+      : GL_RGBA8;
+
     GLuint texHandle;
     glGenTextures(1, &texHandle);
     glBindTexture(GL_TEXTURE_2D, texHandle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
